@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+    제목 : <p type="text" th:text="${board.title}" readonly="readonly"/> <br>
+
+    작성자 : <p type="text" th:text="${board.writer}" readonly="readonly"/> <br>
+
+    <textarea  th:field="${board.content}" readonly="readonly"></textarea><br>
+
+    <a th:href="@{/board/{id}/edit (id=${board.id})} ">수정</a>
+
+    <form id="delete-form" th:action="@{'/board/delete/' + ${board.id}}" method="post">
+        <input type="hidden" name="_method" value="delete"/>
+
+        <button id="delete-btn">삭제</button>
+
+    </form>
+
+    <form th:action="@{/board/like}"  method="post">
+        <input type="hidden" name="id" th:value="${board.id}">
+        <input type="hidden" name="writer" th:value="${board.writer}">
+        <input type="hidden" name="title" th:value="${board.title}">
+        <input type="hidden" name="content" th:value="${board.content}">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+        <button type="submit">좋아요</button>
+
+</form>
+    <p type="text" th:text="${board.boardLikeCount}"/>
+</body>
+</html>

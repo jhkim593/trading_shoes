@@ -1,0 +1,37 @@
+# exception_en.yml
+unKnown:
+  code: "-9999"
+  msg: "An unknown error has occurred."
+userNotFound:
+  code: "-1000"
+  msg: "This member not exist"
+usernameSigninFailed:
+  code: "-1001"
+  msg: "your account does not exist or your email or password is incorrect"
+entryPointException:
+  code: "-1002"
+  msg: "You do not have permission to access this resource"
+accessDenied:
+  code: "-1003"
+  msg: "A resource that can not be accessed with the privileges it has."
+loginFail:
+  code: "-1004"
+  msg: "Login failed"
+alreadyUserExist:
+  code: "-1005"
+  msg: "already user exist"
+notOwner:
+  code: "-1006"
+  msg: "You are not the owner of this resource."
+resourceNotExist:
+  code: "-1007"
+  msg: "This resource does not exist."
+orderNotFound:
+  code: "-1008"
+  msg: "This member not exist"
+notEnoughStock:
+  code: "-1009"
+  msg: "Not Enough Stock"
+shoesAlreadyExist:
+  code: "-1010"
+  msg: "This shoes already exist"

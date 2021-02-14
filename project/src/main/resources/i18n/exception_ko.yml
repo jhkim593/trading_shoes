@@ -1,0 +1,38 @@
+# exception_ko.yml
+unKnown:
+  code: "-9999"
+  msg: "알수 없는 오류가 발생하였습니다."
+userNotFound:
+  code: "-1000"
+  msg: "존재하지 않는 회원입니다."
+usernameSigninFailed:
+  code: "-1001"
+  msg: "계정이 존재하지 않거나 이메일 또는 비밀번호가 정확하지 않습니다."
+entryPointException:
+  code: "-1002"
+  msg: "해당 리소스에 접근하기 위한 권한이 없습니다."
+accessDenied:
+  code: "-1003"
+  msg: "보유한 권한으로 접근할수 없는 리소스 입니다."
+loginFail:
+  code: "-1004"
+  msg: "로그인에 실패하였습니다."
+alreadyUserExist:
+  code: "-1005"
+  msg: "동일한 아이디가 존재합니다."
+notOwner:
+  code: "-1006"
+  msg: "해당 자원의 소유자가 아닙니다."
+resourceNotExist:
+  code: "-1007"
+  msg: "해당 자원이 존재하지 않습니다."
+orderNotFound:
+  code: "-1008"
+  msg: "해당 주문이 존재하지 않습니다"
+notEnoughStock:
+  code: "-1009"
+  msg: "재고가 존재하지 않습니다."
+shoesAlreadyExist:
+  code: "-1010"
+  msg: "이미 동일한 이름의 신발이 존재합니다."
+
