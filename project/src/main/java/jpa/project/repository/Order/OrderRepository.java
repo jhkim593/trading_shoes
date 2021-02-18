@@ -7,7 +7,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-public interface OrderRepository extends JpaRepository<Order,Long> {
+public interface OrderRepository extends JpaRepository<Order,Long>,OrderRepositoryCustom {
 
     @Query("select o from Order o join fetch o.buyer b join fetch o.seller s join fetch o.registedShoes r join fetch r.shoesInSize ss join fetch ss.size join fetch ss.shoes where b.id=:memberId order by o.createdDate")
     List<Order> findPurChasOrderOrderByCreatedDate(@Param("memberId")Long id);

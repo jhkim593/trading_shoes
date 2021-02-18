@@ -13,9 +13,6 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-
-
-
 public class Board extends BaseTimeEntity {
     @Id
     @GeneratedValue

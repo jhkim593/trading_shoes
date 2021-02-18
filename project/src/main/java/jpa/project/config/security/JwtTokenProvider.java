@@ -1,9 +1,6 @@
 package jpa.project.config.security;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import jpa.project.cache.CacheKey;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -93,6 +90,18 @@ public class JwtTokenProvider { // JWT 토큰을 생성 및 검증 모듈
         try {
             Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwtToken);
             return !claims.getBody().getExpiration().before(new Date());
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public boolean validateTokenExceptExpiration(String jwtToken) {
+        try {
+            if(isLoggedOut(jwtToken)) return false;
+            Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwtToken);
+            return claims.getBody().getExpiration().before(new Date());
+        } catch(ExpiredJwtException e) {
+            return true;
         } catch (Exception e) {
             return false;
         }

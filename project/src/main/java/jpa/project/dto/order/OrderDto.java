@@ -1,4 +1,4 @@
-package jpa.project.dto.Order;
+package jpa.project.dto.order;
 
 import jpa.project.entity.Address;
 import jpa.project.entity.Order;

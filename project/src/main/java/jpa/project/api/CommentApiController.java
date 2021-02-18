@@ -11,6 +11,7 @@ import jpa.project.dto.comment.CommentDto;
 import jpa.project.dto.member.MemberDto;
 import jpa.project.entity.Comment;
 import jpa.project.repository.comment.CommentRepository;
+import jpa.project.response.CommonResult;
 import jpa.project.response.ListResult;
 import jpa.project.response.SingleResult;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +37,26 @@ public class CommentApiController {
     @PostMapping("/comment")
     public SingleResult<CommentDto>saveComment(@ModelAttribute CommentCreateRequestDto ccrDto){
        return responseService.getSingResult(commentService.saveComment(ccrDto));
+    }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "access-token", required = true, dataType = "String", paramType = "header")
+    })
+    @ApiOperation(value = "댓글 삭제", notes = "회원이 댓글을 삭제한다")
+    @DeleteMapping("/comment/{id}")
+    public CommonResult deleteComment(@PathVariable("id")Long id){
+        commentService.deleteComment(id);
+        return responseService.getSuccessResult();
+    }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "access-token", required = true, dataType = "String", paramType = "header")
+    })
+    @ApiOperation(value = "댓글 수정", notes = "회원이 댓글을 수정한다")
+    @DeleteMapping("/comment/{id}")
+    public CommonResult updateComment(@PathVariable("id")Long id,String content){
+        commentService.updateComment(id,content);
+        return responseService.getSuccessResult();
     }
 
 }

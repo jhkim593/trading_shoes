@@ -6,21 +6,18 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import jpa.project.Service.OrderService;
 import jpa.project.Service.ResponseService;
-import jpa.project.dto.Order.OrderDto;
-import jpa.project.dto.Order.OrderSimpleDto;
-import jpa.project.repository.Order.OrderRepository;
+import jpa.project.dto.order.OrderDto;
+import jpa.project.dto.order.OrderSimpleDto;
+import jpa.project.repository.search.ShoesSizeSearch;
 import jpa.project.response.ListResult;
 import jpa.project.response.SingleResult;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.OrderComparator;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @Api(tags = {"6.Order"})
 @RestController
@@ -56,9 +53,17 @@ public class OrderApiController {
         return responseService.getListResult(orderService.findPurchasedOrder(id));
 
     }
+    @ApiOperation(value = "주문 상세정보" ,notes = "주문 상세정보를 조회한다.")
     @GetMapping("/order/{id}")
         public SingleResult<OrderDto>detail(@PathVariable("id")Long id){
         return responseService.getSingResult(orderService.detail(id));
     }
+    @ApiOperation(value = "신발 거래 내역" ,notes = "거래된 신발 정보를 표시한다.")
+    @GetMapping("/order/{shoesId}")
+    public ListResult<OrderSimpleDto>findOrderByShoesSizeSearch(@PathVariable("shoesId")Long shoesId, ShoesSizeSearch shoesSizeSearch){
+
+        return responseService.getListResult(orderService.findOrdersByShoesSize(shoesSizeSearch));
+    }
+
 
 }

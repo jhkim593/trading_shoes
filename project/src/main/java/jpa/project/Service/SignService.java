@@ -13,6 +13,7 @@ import jpa.project.entity.Member;
 import jpa.project.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,6 +37,15 @@ public class SignService {
         redisTemplate.opsForValue().set(CacheKey.TOKEN + ":" + token, "v", jwtTokenProvider.getRemainingSeconds(token));
         Member member = memberRepository.findById(Long.valueOf(jwtTokenProvider.getMemberPk(token))).orElseThrow(CUserNotFoundException::new);
         member.changeRefreshToken("invalid");
+    }
+    @Transactional
+    public MemberLoginResponseDto refreshToken(String token,String refreshToken){
+        if(!jwtTokenProvider.validateTokenExceptExpiration(token))throw new AccessDeniedException("");
+        Member member = memberRepository.findById(Long.valueOf(jwtTokenProvider.getMemberPk(token))).orElseThrow(CUserNotFoundException::new);
+        if(!jwtTokenProvider.validateToken(member.getRefreshToken())||!refreshToken.equals(member.getRefreshToken()))
+            throw new AccessDeniedException("");
+        member.changeRefreshToken(jwtTokenProvider.createRefreshToken());
+        return new MemberLoginResponseDto(member.getId(),jwtTokenProvider.createToken(String.valueOf(member.getId()),member.getRoles()),member.getRefreshToken());
     }
 
     @Transactional

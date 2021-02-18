@@ -50,6 +50,7 @@ public class MemberService  {
 
 
 
+
 //        validJoinUser(member);
 
 

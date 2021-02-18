@@ -4,10 +4,12 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.jdo.annotations.Serialized;
+import java.io.Serializable;
+
 @Getter
 @Setter
-public class CommonResult {
-
+public class CommonResult implements Serializable {
     @ApiModelProperty(value = "응답 성공여부 : true/false")
     private boolean
             success;

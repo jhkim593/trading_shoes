@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.redis.cache.CacheKeyPrefix;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
@@ -19,9 +20,10 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
-@RequiredArgsConstructor
+
 @EnableCaching
 @Configuration
+
 public class RedisConfig {
     @Value("${spring.redis.port}")
     private int port;
@@ -43,8 +45,9 @@ public class RedisConfig {
         return redisTemplate;
     }
 
-    @Bean(name = "cacheManager")
-    public RedisCacheManager cacheManager(RedisConnectionFactory connectionFactory) {
+
+    @Bean
+    public RedisCacheManager cacheManager() {
 
         RedisCacheConfiguration configuration = RedisCacheConfiguration.defaultCacheConfig()
                 .disableCachingNullValues() // null value 캐시안함
@@ -62,8 +65,10 @@ public class RedisConfig {
                 .entryTtl(Duration.ofSeconds(CacheKey.POST_EXPIRE_SEC)));
         cacheConfigurations.put(CacheKey.POSTS, RedisCacheConfiguration.defaultCacheConfig()
                 .entryTtl(Duration.ofSeconds(CacheKey.POST_EXPIRE_SEC)));
+//        cacheConfigurations.put(CacheKey.BOARDS, RedisCacheConfiguration.defaultCacheConfig()
+//                .entryTtl(Duration.ofSeconds(CacheKey.POST_EXPIRE_SEC)));
 
-        return RedisCacheManager.RedisCacheManagerBuilder.fromConnectionFactory(connectionFactory).cacheDefaults(configuration)
+        return RedisCacheManager.RedisCacheManagerBuilder.fromConnectionFactory(redisConnectionFactory()).cacheDefaults(configuration)
                 .withInitialCacheConfigurations(cacheConfigurations).build();
     }
 }

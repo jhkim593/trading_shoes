@@ -2,6 +2,7 @@ package jpa.project.Service;
 
 import jpa.project.advide.exception.CNotOwnerException;
 import jpa.project.advide.exception.CResourceNotExistException;
+import jpa.project.cache.CacheKey;
 import jpa.project.dto.board.BoardCreateRequestDto;
 import jpa.project.dto.board.BoardDto;
 import jpa.project.entity.Board;
@@ -12,6 +13,9 @@ import jpa.project.repository.search.BoardSearch;
 import jpa.project.repository.Board_likedRepository;
 import jpa.project.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -37,46 +41,54 @@ public class BoardService {
         Member member = findMember.orElseThrow(() -> new NoSuchElementException());
         Board board = Board.addBoard(member, bcrDto);
         boardRepository.save(board);
-       return new BoardDto(board);
+       return BoardDto.createBoardDto(board);
     }
 
     @Transactional
-    public BoardDto update(Long id,String username,BoardCreateRequestDto boardCreateRequestDto){
-        Optional<Board> findBoard = boardRepository.findById(id);
+    @Caching(evict = {
+            @CacheEvict(value = CacheKey.BOARD,key="#boardId"),
+          })
+    public BoardDto update(Long boardId,String username,BoardCreateRequestDto boardCreateRequestDto){
+        Optional<Board> findBoard = boardRepository.findById(boardId);
         Board board = findBoard.orElseThrow(() -> new CResourceNotExistException());
         if(!board.getMember().getUsername().equals(username)){
             throw new CNotOwnerException();
         }
         board.update(boardCreateRequestDto);
-        return new BoardDto(board);
+        return BoardDto.createBoardDto(board);
 
 
     }
     @Transactional
-    public void delete(Long id,String username){
-        Optional<Board> findBoard = boardRepository.findById(id);
+    @Caching(evict = {
+            @CacheEvict(value = CacheKey.BOARD,key="#boardId"),
+    })
+    public void delete(Long boardId,String username){
+        Optional<Board> findBoard = boardRepository.findById(boardId);
         Board board = findBoard.orElseThrow(() -> new CResourceNotExistException());
         if(!board.getMember().getUsername().equals(username)){
             throw  new CNotOwnerException();
         }
 
-        boardRepository.deleteById(id);
+        boardRepository.deleteById(boardId);
     }
+
 
     public List<BoardDto> findAll(){
         List<Board> board = boardRepository.findAll();
         List<BoardDto>boardDtoList=new ArrayList<>();
        for(Board boards:board){
-           BoardDto boardDto=new BoardDto(boards);
+           BoardDto boardDto = BoardDto.createBoardDto(boards);
            boardDtoList.add(boardDto);
        }
        return boardDtoList;
     }
-    public BoardDto find(Long id){
-        Optional<Board> opBoard = boardRepository.findById(id);
+
+    @Cacheable(value = CacheKey.BOARD,key="#boardId",unless ="#result==null")
+    public BoardDto find(Long boardId){
+        Optional<Board> opBoard = boardRepository.findById(boardId);
         Board board = opBoard.orElseThrow(() -> new CResourceNotExistException());
-        BoardDto boardDto=new BoardDto(board);
-        return boardDto;
+        return BoardDto.createBoardDto(board);
     }
 
     @Transactional
@@ -114,12 +126,13 @@ public class BoardService {
 
 
 //    }
-    @Transactional
-    public BoardDto boardLikeCount(BoardDto boardDto){
-        int i = board_likedRepository.boardLikeCount(boardDto.getId());
-        boardDto.setBoardLikeCount(i);
-        return boardDto;
-    }
+//    @Transactional
+//    public BoardDto boardLikeCount(BoardDto boardDto){
+//        int i = board_likedRepository.boardLikeCount(boardDto.getId());
+//        boardDto.setBoardLikeCount(i);
+//        return boardDto;
+//    }
+
 
     public Page<BoardDto>search(BoardSearch search,Pageable pageable){
         return boardRepository.search(search,pageable);

@@ -42,7 +42,7 @@ public class BoardApiController {
     @ApiOperation(value = "게시판 글 상세",notes = "게시판 상세정보 조회")
     @GetMapping("/board/{id}")
     public SingleResult<BoardDto>detail(@PathVariable("id")Long id){
-        return responseService.getSingResult(boardService.find(id));
+         return responseService.getSingResult(boardService.find(id));
     }
 
     @ApiOperation(value = "게시판 조회", notes = "게시판 목록을 조회한다.")

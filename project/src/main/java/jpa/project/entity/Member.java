@@ -49,7 +49,7 @@ public class Member extends BaseTimeEntity implements UserDetails {
     private List<Board_liked>board_likeds=new ArrayList<>();
 
 
-    @ElementCollection(fetch = FetchType.LAZY)
+    @ElementCollection(fetch = FetchType.EAGER)
     @Builder.Default
     private List<String> roles=new ArrayList<>();
 

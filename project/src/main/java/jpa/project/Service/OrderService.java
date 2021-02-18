@@ -1,18 +1,15 @@
 package jpa.project.Service;
 
-import jpa.project.advide.exception.CAlreadySoldException;
 import jpa.project.advide.exception.COrderNotFoundException;
 import jpa.project.advide.exception.CResourceNotExistException;
 import jpa.project.advide.exception.CUserNotFoundException;
-import jpa.project.dto.Order.OrderDto;
-import jpa.project.dto.Order.OrderSimpleDto;
-import jpa.project.entity.Member;
-import jpa.project.entity.Order;
-import jpa.project.entity.RegistedShoes;
-import jpa.project.entity.ShoesStatus;
+import jpa.project.dto.order.OrderDto;
+import jpa.project.dto.order.OrderSimpleDto;
+import jpa.project.entity.*;
 import jpa.project.repository.MemberRepository;
 import jpa.project.repository.Order.OrderRepository;
 import jpa.project.repository.RegistedShoesRepository;
+import jpa.project.repository.search.ShoesSizeSearch;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -66,4 +63,9 @@ public class OrderService {
 //    public void deleteOrder(Long orderId){
 //        orderRepository.delete(
 //    }
+    //신발 거래된 주문표시
+
+    public List<OrderSimpleDto>findOrdersByShoesSize(ShoesSizeSearch shoesSizeSearch){
+        return orderRepository.findOrdersByShoesSize(shoesSizeSearch);
+    }
 }

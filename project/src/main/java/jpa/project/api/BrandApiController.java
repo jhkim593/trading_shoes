@@ -45,7 +45,7 @@ public class BrandApiController {
             @ApiImplicitParam(name = "X-AUTH-TOKEN",value = "로그인 성공후 access-token",required = true,dataType = "String",paramType = "header")
     })
     @ApiOperation(value="브랜드 삭제",notes="브랜드를 삭제한다")
-    @DeleteMapping("/admin/brand")
+    @DeleteMapping("/admin/brand/{id}")
     public CommonResult delete(@PathVariable("id")Long id){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();

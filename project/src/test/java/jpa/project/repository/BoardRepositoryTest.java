@@ -61,47 +61,47 @@ class BoardRepositoryTest {
 //        em.persist(board5);
 //    }
 
-        @Test
-        public void search()throws Exception{
-
-           Member member=new Member();
-           member.setUsername("1");
-           em.persist(member);
-
-           Board board=new Board();
-           board.setTitle("1");
-           board.addMember(member);
-           board.setContent("1");
-           em.persist(board);
-
-           Board board1=new Board();
-           board1.setTitle("2");
-           board1.setContent("2");
-           board1.addMember(member);
-
-           em.persist(board1);
-
-
-            BoardSearch boardSearch= new BoardSearch();
-//            boardSearch.setContent("1");
-//            boardSearch.setTitle("1");
-
-            Board_liked board_liked=new Board_liked(board,member);
-            em.persist(board_liked);
-
-            PageRequest pageRequest=PageRequest.of(0,3);
-
-//            Page<BoardDto> search = boardRepository.search(boardSearch, pageRequest);
+//        @Test
+//        public void search()throws Exception{
 //
-//            assertThat(search).extracting("boardLikeCount").containsExactly("1");
-
-            List<BoardDto> boardDtos = boardRepository.searchTest(boardSearch);
-            for (BoardDto boardDto : boardDtos) {
-                System.out.println(boardDto);
-            }
-//            assertThat(boardDtos).extracting("boardLikeCount").containsExactly(1,0);
-
-        }
-
-    }
+//           Member member=new Member();
+//           member.setUsername("1");
+//           em.persist(member);
+//
+//           Board board=new Board();
+//           board.setTitle("1");
+//           board.addMember(member);
+//           board.setContent("1");
+//           em.persist(board);
+//
+//           Board board1=new Board();
+//           board1.setTitle("2");
+//           board1.setContent("2");
+//           board1.addMember(member);
+//
+//           em.persist(board1);
+//
+//
+//            BoardSearch boardSearch= new BoardSearch();
+////            boardSearch.setContent("1");
+////            boardSearch.setTitle("1");
+//
+//            Board_liked board_liked=new Board_liked(board,member);
+//            em.persist(board_liked);
+//
+//            PageRequest pageRequest=PageRequest.of(0,3);
+//
+////            Page<BoardDto> search = boardRepository.search(boardSearch, pageRequest);
+////
+////            assertThat(search).extracting("boardLikeCount").containsExactly("1");
+//
+//            List<BoardDto> boardDtos = boardRepository.searchTest(boardSearch);
+//            for (BoardDto boardDto : boardDtos) {
+//                System.out.println(boardDto);
+//            }
+////            assertThat(boardDtos).extracting("boardLikeCount").containsExactly(1,0);
+//
+//        }
+//
+//    }
 
