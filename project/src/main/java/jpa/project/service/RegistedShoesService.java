@@ -1,4 +1,4 @@
-package jpa.project.Service;
+package jpa.project.service;
 
 import jpa.project.advide.exception.CResourceNotExistException;
 import jpa.project.advide.exception.CUserNotFoundException;
@@ -17,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor

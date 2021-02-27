@@ -1,4 +1,4 @@
-package jpa.project.Service;
+package jpa.project.service;
 
 import jpa.project.advide.exception.CUserNotFoundException;
 import jpa.project.advide.exception.CUsernameSigninFailedException;

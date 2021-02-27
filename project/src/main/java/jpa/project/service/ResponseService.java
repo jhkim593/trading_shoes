@@ -1,4 +1,4 @@
-package jpa.project.Service;
+package jpa.project.service;
 
 import jpa.project.response.CommonResult;
 import jpa.project.response.ListResult;

@@ -1,4 +1,4 @@
-package jpa.project.Service;
+package jpa.project.service;
 
 import jpa.project.dto.member.MemberDto;
 import jpa.project.entity.Member;
