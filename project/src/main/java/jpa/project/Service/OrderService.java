@@ -6,9 +6,9 @@ import jpa.project.advide.exception.CUserNotFoundException;
 import jpa.project.dto.order.OrderDto;
 import jpa.project.dto.order.OrderSimpleDto;
 import jpa.project.entity.*;
-import jpa.project.repository.MemberRepository;
+import jpa.project.repository.member.MemberRepository;
 import jpa.project.repository.Order.OrderRepository;
-import jpa.project.repository.RegistedShoesRepository;
+import jpa.project.repository.registedShoes.RegistedShoesRepository;
 import jpa.project.repository.search.ShoesSizeSearch;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -33,8 +33,11 @@ public class OrderService {
         Optional<RegistedShoes> findRegistedShoes = registedShoesRepository.findById(registedShoesId);
         RegistedShoes registedShoes = findRegistedShoes.orElseThrow(CResourceNotExistException::new);
         Order order = Order.createOrder(member, registedShoes.getMember(), registedShoes);
+        int changePrice = registedShoesRepository.findSellOrderByPrice();
+        registedShoes.getShoesInSize().changeLowestPrice(changePrice);
         orderRepository.save(order);
         return OrderDto.createOrderDto(order);
+
     }
 
 //    public OrderSimpleDto findOrder(String username){
@@ -65,7 +68,7 @@ public class OrderService {
 //    }
     //신발 거래된 주문표시
 
-    public List<OrderSimpleDto>findOrdersByShoesSize(ShoesSizeSearch shoesSizeSearch){
-        return orderRepository.findOrdersByShoesSize(shoesSizeSearch);
+    public List<OrderSimpleDto>findOrdersByShoesSize(Long shoesId,ShoesSizeSearch shoesSizeSearch){
+        return orderRepository.findOrdersByShoesSize(shoesId,shoesSizeSearch);
     }
 }

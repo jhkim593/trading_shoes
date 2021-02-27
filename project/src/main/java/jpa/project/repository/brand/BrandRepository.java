@@ -1,4 +1,4 @@
-package jpa.project.repository;
+package jpa.project.repository.brand;
 
 import jpa.project.entity.Brand;
 import jpa.project.entity.Member;

@@ -1,8 +1,6 @@
 package jpa.project.Service;
 
-import jpa.project.entity.Brand;
-import jpa.project.entity.Member;
-import jpa.project.entity.ShoesSize;
+import jpa.project.entity.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,6 +53,14 @@ public class Init {
 
             Brand asics = Brand.createBrand("asics", "111");
             em.persist(asics);
+
+//
+
+
+            Shoes shoes = Shoes.createShoes("1", asics, ShoesInSize.createShoesInSize(shoesSize), ShoesInSize.createShoesInSize(shoesSize1), ShoesInSize.createShoesInSize(shoesSize2),
+                    ShoesInSize.createShoesInSize(shoesSize3), ShoesInSize.createShoesInSize(shoesSize4), ShoesInSize.createShoesInSize(shoesSize5), ShoesInSize.createShoesInSize(shoesSize6), ShoesInSize.createShoesInSize(shoesSize7), ShoesInSize.createShoesInSize(shoesSize8),
+                    ShoesInSize.createShoesInSize(shoesSize9), ShoesInSize.createShoesInSize(shoesSize10));
+            em.persist(shoes);
 
 
         }

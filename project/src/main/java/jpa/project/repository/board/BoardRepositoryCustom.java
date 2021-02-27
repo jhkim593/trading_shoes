@@ -1,4 +1,4 @@
-package jpa.project.repository.custom;
+package jpa.project.repository.board;
 
 import jpa.project.dto.board.BoardDto;
 import jpa.project.repository.search.BoardSearch;

@@ -1,6 +1,6 @@
 package jpa.project.entity;
 
 public enum ShoesStatus {
-    //입찰 중 ,판매완료
+    //입찰 중 ,거래완료
     BID, COMP
 }

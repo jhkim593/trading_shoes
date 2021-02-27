@@ -10,7 +10,7 @@ import jpa.project.dto.member.MemberLoginResponseDto;
 import jpa.project.dto.member.MemberRegisterRequestDto;
 import jpa.project.dto.member.MemberRegisterResponseDto;
 import jpa.project.entity.Member;
-import jpa.project.repository.MemberRepository;
+import jpa.project.repository.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.access.AccessDeniedException;
@@ -78,6 +78,7 @@ public class SignService {
     }
 
     private void validMember(String username) {
+
         if(memberRepository.findByUsername(username).isPresent())throw new CUserAlreadyExistException();
 
     }

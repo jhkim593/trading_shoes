@@ -1,7 +1,11 @@
 package jpa.project.dto.Shoes;
 
+
 import jpa.project.entity.Shoes;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -9,10 +13,8 @@ import java.util.stream.Collectors;
 
 @Getter
 @Setter
-
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ShoesWithSizeDto {
-
+public class BuyShoesDto {
     private Long id;
 
     private String name;
@@ -21,16 +23,15 @@ public class ShoesWithSizeDto {
 
     private LocalDateTime createdDate;
 
-    private List<ShoesInSizeDto> shoesInSize;
+    private List<BuyShoesInSizeDto> shoesInSize;
 
-    public ShoesWithSizeDto(Shoes shoes){
+    public BuyShoesDto(Shoes shoes){
         this.id=shoes.getId();
         this.name=shoes.getName();
         this.brand=shoes.getBrand().getName();
         this.createdDate=shoes.getCreatedDate();
-        this.shoesInSize=shoes.getShoesInSizes().stream().map(s->new ShoesInSizeDto(s)).collect(Collectors.toList());
+        this.shoesInSize=shoes.getShoesInSizes().stream().map(s->new BuyShoesInSizeDto(s)).collect(Collectors.toList());
 
 
     }
-
 }

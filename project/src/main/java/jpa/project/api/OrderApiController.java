@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@Api(tags = {"6.Order"})
+@Api(tags = {"7.Order"})
 @RestController
 @RequiredArgsConstructor
 public class OrderApiController {
@@ -38,9 +38,7 @@ public class OrderApiController {
         return responseService.getSingResult(orderService.save(username,id));
 
     }
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "X-AUTH-TOKEN",value = "로그인 성공후 access-token",required = true,dataType = "String",paramType = "header")
-    })
+
     @ApiOperation(value = "판매 주문내역" ,notes = "회원이 판매한 주문을 조회한다.")
     @GetMapping("/orders/sale/{id}")
     public ListResult<OrderSimpleDto> salesOrders(@PathVariable("id")Long id){
@@ -59,10 +57,10 @@ public class OrderApiController {
         return responseService.getSingResult(orderService.detail(id));
     }
     @ApiOperation(value = "신발 거래 내역" ,notes = "거래된 신발 정보를 표시한다.")
-    @GetMapping("/order/{shoesId}")
+    @GetMapping("/orders/shoes/{shoesId}")
     public ListResult<OrderSimpleDto>findOrderByShoesSizeSearch(@PathVariable("shoesId")Long shoesId, ShoesSizeSearch shoesSizeSearch){
 
-        return responseService.getListResult(orderService.findOrdersByShoesSize(shoesSizeSearch));
+        return responseService.getListResult(orderService.findOrdersByShoesSize(shoesId,shoesSizeSearch));
     }
 
 

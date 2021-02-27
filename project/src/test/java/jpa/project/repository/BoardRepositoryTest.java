@@ -1,31 +1,18 @@
 package jpa.project.repository;
 
-import jpa.project.dto.board.BoardDto;
-import jpa.project.entity.Board;
-import jpa.project.entity.Board_liked;
-import jpa.project.entity.Member;
-import jpa.project.repository.custom.BoardRepository;
-import jpa.project.repository.search.BoardSearch;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.test.annotation.Commit;
-import org.springframework.transaction.annotation.Transactional;
-
-import javax.persistence.EntityManager;
-
-import java.util.List;
-
-@SpringBootTest
-@Transactional
-@Commit
-class BoardRepositoryTest {
-    @Autowired
-    private BoardRepository boardRepository;
-
-    @Autowired
-    private EntityManager em;
+//import javax.persistence.EntityManager;
+//
+//import java.util.List;
+//
+//@SpringBootTest
+//@Transactional
+//@Commit
+//class BoardRepositoryTest {
+//    @Autowired
+//    private BoardRepository boardRepository;
+//
+//    @Autowired
+//    private EntityManager em;
 
 //    @BeforeEach
 //    public void boardInit() {

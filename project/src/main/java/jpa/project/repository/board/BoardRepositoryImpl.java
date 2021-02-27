@@ -1,4 +1,4 @@
-package jpa.project.repository.custom;
+package jpa.project.repository.board;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;

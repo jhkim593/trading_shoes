@@ -8,9 +8,9 @@ import jpa.project.entity.Board;
 import jpa.project.entity.Comment;
 import jpa.project.entity.DeleteStatus;
 import jpa.project.entity.Member;
-import jpa.project.repository.MemberRepository;
+import jpa.project.repository.member.MemberRepository;
 import jpa.project.repository.comment.CommentRepository;
-import jpa.project.repository.custom.BoardRepository;
+import jpa.project.repository.board.BoardRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,10 +27,8 @@ public class CommentService {
 
     @Transactional
     public CommentDto saveComment(CommentCreateRequestDto requestDto){
-        Optional<Member> findMember = memberRepository.findById(requestDto.getMemberId());
-        Member member = findMember.orElseThrow(CUserNotFoundException::new);
-        Optional<Board> findBoard = boardRepository.findById(requestDto.getBoardId());
-        Board board = findBoard.orElseThrow(CResourceNotExistException::new);
+        Member member = getMember(requestDto);
+        Board board = getBoard(requestDto.getBoardId());
 
         Comment comment = commentRepository.save(Comment.createComment(requestDto.getContent(), board, member,
                 requestDto.getParentId() == null ? null : commentRepository.findById(requestDto.getParentId()).orElseThrow(CResourceNotExistException::new)));
@@ -38,9 +36,21 @@ public class CommentService {
         return CommentDto.createCommentDto(comment);
 
     }
-    public List<CommentDto> findCommentByBoardId(Long boardId){
+
+    private Board getBoard(Long boardId) {
         Optional<Board> findBoard = boardRepository.findById(boardId);
-        findBoard.orElseThrow(CResourceNotExistException::new);
+        Board board = findBoard.orElseThrow(CResourceNotExistException::new);
+        return board;
+    }
+
+    private Member getMember(CommentCreateRequestDto requestDto) {
+        Optional<Member> findMember = memberRepository.findById(requestDto.getMemberId());
+        Member member = findMember.orElseThrow(CUserNotFoundException::new);
+        return member;
+    }
+
+    public List<CommentDto> findCommentByBoardId(Long boardId){
+        getBoard(boardId);
         List<Comment> findComments = commentRepository.findCommentsByBoardId(boardId);
         List<CommentDto>commentDtos=new ArrayList<>();
         Map<Long,CommentDto> commentDtoMap=new HashMap<>();
@@ -60,8 +70,7 @@ public class CommentService {
     public void deleteComment(Long commentId){
         Comment comment = commentRepository.findById(commentId).orElseThrow(CResourceNotExistException::new);
         if(comment.getChild().size()==0){
-            deleteAble(comment);
-        }
+            commentRepository.delete(deleteAble(comment));}
         else{
             comment.deleteComment(DeleteStatus.YES);
         }
@@ -82,7 +91,6 @@ public class CommentService {
             throw new CResourceNotExistException();
         }
         comment.updateComment(content);
-
 
     }
 

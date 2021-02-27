@@ -1,31 +1,25 @@
 package jpa.project.repository.shoes;
 
-import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import jpa.project.dto.RegistedShoes.RegistedShoesDto;
-import jpa.project.dto.RegistedShoes.RegistedShoesSimpleDto;
+//import jpa.project.dto.RegistedShoes.RegistedShoesSimpleDto;
+import jpa.project.dto.Shoes.BuyShoesDto;
+import jpa.project.dto.Shoes.SellShoesDto;
 import jpa.project.dto.Shoes.ShoesDto;
-import jpa.project.dto.Shoes.ShoesInSizeDto;
-import jpa.project.dto.Shoes.ShoesWithSizeDto;
 import jpa.project.entity.*;
 import jpa.project.repository.search.ShoesSearch;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.support.PageableExecutionUtils;
-import org.springframework.util.StringUtils;
 
 import javax.persistence.EntityManager;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static jpa.project.entity.QBrand.*;
-import static jpa.project.entity.QRegistedShoes.*;
 import static jpa.project.entity.QShoes.*;
 import static jpa.project.entity.QShoesInSize.*;
 import static jpa.project.entity.QShoesSize.*;
@@ -47,7 +41,8 @@ public class ShoesRepositoryImpl implements ShoesRepositoryCustom {
                 shoes.id,
                 shoes.name,
                 brand.name.as("brand"),
-                shoes.createdDate
+                shoes.createdDate,
+                shoes.price
         )).from(shoes)
                 .join(shoes.brand, brand)
                 .where(
@@ -98,20 +93,26 @@ public class ShoesRepositoryImpl implements ShoesRepositoryCustom {
 
 //    }
     public Shoes detailShoes(Long id){
-        Shoes detailShoes = queryFactory.selectFrom(QShoes.shoes).distinct()
-                .join(QShoes.shoes.shoesInSizes, shoesInSize).fetchJoin()
-                .join(QShoes.shoes.brand, brand).fetchJoin()
+        Shoes detailShoes = queryFactory.selectFrom(shoes).distinct()
+                .join(shoes.shoesInSizes, shoesInSize).fetchJoin()
+                .join(shoes.brand, brand).fetchJoin()
                 .join(shoesInSize.size, shoesSize).fetchJoin()
-                .where(QShoes.shoes.id.eq(id))
+                .where(shoes.id.eq(id))
                 .fetchOne();
         return detailShoes;
     }
     @Override
-    public ShoesWithSizeDto detailShoesWithSizeDto(Long id) {
+    public SellShoesDto detailSellShoesDto(Long id) {
         Shoes detailShoes= detailShoes(id);
-        return new ShoesWithSizeDto(detailShoes);
-//        QShoes.shoes.stream().map(s->new ShoesWithSizeDto(s)).collect(Collectors.toList());
+        return new SellShoesDto(detailShoes);
+//        QShoes.shoes.stream().map(s->new SellShoesWithSizeDto(s)).collect(Collectors.toList());
     }
+    @Override
+    public BuyShoesDto detailBuyShoesDto(Long shoesId) {
+        Shoes detailShoes= detailShoes(shoesId);
+        return new BuyShoesDto(detailShoes);
+    }
+
 
 
 }

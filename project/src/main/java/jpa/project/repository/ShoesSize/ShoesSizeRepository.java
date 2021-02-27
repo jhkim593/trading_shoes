@@ -1,4 +1,4 @@
-package jpa.project.repository;
+package jpa.project.repository.ShoesSize;
 
 import jpa.project.entity.ShoesSize;
 import org.springframework.data.jpa.repository.JpaRepository;

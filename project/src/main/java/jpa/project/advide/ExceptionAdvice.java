@@ -34,6 +34,7 @@ public class ExceptionAdvice {
         return responseService.getFailResult(Integer.valueOf(getMessage("loginFail.code")),getMessage("loginFail.msg"));
     }
     @ExceptionHandler(CUserAlreadyExistException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     protected CommonResult userAlreadyExistException(){
         return responseService.getFailResult(Integer.valueOf(getMessage("alreadyUserExist.code")),getMessage("alreadyUserExist.msg"));
     }
@@ -77,6 +78,7 @@ public class ExceptionAdvice {
 
     }
     @ExceptionHandler(CNotEnoughStockException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public CommonResult notEnoughStock(HttpServletRequest request,AccessDeniedException e){
         return responseService.getFailResult(Integer.valueOf(getMessage("notEnoughStock.code")), getMessage("notEnoughStock.msg"));
 

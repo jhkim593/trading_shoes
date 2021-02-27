@@ -1,6 +1,7 @@
 package jpa.project.dto.RegistedShoes;
 
 import jpa.project.entity.RegistedShoes;
+import jpa.project.entity.TradeStatus;
 import lombok.*;
 
 @Getter
@@ -13,9 +14,11 @@ public class RegistedShoesDto {
     private String size;
     private String username;
     private int price;
+    private TradeStatus tradeStatus;
 
-    public static RegistedShoesDto createRegistedShoesDto(String shoesname, String username,String size,int price){
-        return new RegistedShoesDto(shoesname,size,username,price);
+    public static RegistedShoesDto createRegistedShoesDto(RegistedShoes registedShoes){
+        return new RegistedShoesDto(registedShoes.getShoesInSize().getShoes().getName(),registedShoes.getShoesInSize().getSize().getUS(),
+                registedShoes.getMember().getUsername(), registedShoes.getPrice(),registedShoes.getTradeStatus());
     }
 
 }

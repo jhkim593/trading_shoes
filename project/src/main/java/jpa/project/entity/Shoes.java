@@ -1,6 +1,9 @@
 package jpa.project.entity;
 
+import jpa.project.advide.exception.CNotEnoughStockException;
 import lombok.Getter;
+import lombok.Setter;
+import org.springframework.security.core.parameters.P;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -8,6 +11,7 @@ import java.util.List;
 
 @Entity
 @Getter
+@Setter
 public class Shoes extends BaseTimeEntity{
     @Id
     @GeneratedValue
@@ -17,13 +21,13 @@ public class Shoes extends BaseTimeEntity{
     private String name;
 
     //사이즈중 가장 최저가
-    private String price;
+    private int price;
 
     //모든 사이즈 총 재고
     private int stockQuantity;
 
 
-//조회수
+     //조회수
      private int view;
 
 
@@ -54,7 +58,6 @@ public static Shoes createShoes(String name,Brand brand,ShoesInSize...shoesInSiz
     }
 
         return shoes;
-
     }
 
     public void addBrand(Brand brand){
@@ -76,6 +79,24 @@ public static Shoes createShoes(String name,Brand brand,ShoesInSize...shoesInSiz
 
     public void addView(){
     this.view+=1;
+    }
+
+    public void order() {
+        int restStock=this.stockQuantity-=1;
+        if(restStock<=0){
+            throw new CNotEnoughStockException();
+        }
+        this.stockQuantity-=1;
+    }
+
+    public void changePrice(int price) {
+    if(this.getPrice()==0||this.getPrice()>price){
+        this.price=price;
+    }
+
+    }
+    public void justChangePrice(int price){
+        this.price=price;
     }
 }
 

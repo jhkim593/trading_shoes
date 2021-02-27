@@ -21,10 +21,12 @@ public class ShoesDto {
 
     private LocalDateTime createdDate;
 
+    private int price;
+
 
    public static ShoesDto createShoesDto(Shoes shoes){
        return new ShoesDto(shoes.getId(),shoes.getName(),shoes.getBrand().getName()
-               ,shoes.getCreatedDate());
+               ,shoes.getCreatedDate(),shoes.getPrice());
 
    }
 

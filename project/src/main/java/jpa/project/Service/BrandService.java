@@ -7,16 +7,14 @@ import jpa.project.dto.brand.BrandDto;
 import jpa.project.dto.brand.BrandRegisterDto;
 import jpa.project.dto.brand.BrandSimpleDto;
 import jpa.project.dto.brand.BrandUpdateDto;
-import jpa.project.entity.Board;
 import jpa.project.entity.Brand;
 import jpa.project.entity.Member;
-import jpa.project.repository.BrandRepository;
-import jpa.project.repository.MemberRepository;
+import jpa.project.repository.brand.BrandRepository;
+import jpa.project.repository.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -39,15 +37,25 @@ public class BrandService {
     }
     @Transactional
     public void delete(Long id, String username){
-        Optional<Brand> findBrand =brandRepository.findById(id);
-        Optional<Member> findMember = memberRepository.findByUsername(username);
-        Member member = findMember.orElseThrow(() -> new CUserNotFoundException());
+        Brand brand = getBrand(id);
+        Member member = getMember(username);
 
-        Brand brand = findBrand.orElseThrow(() -> new CResourceNotExistException());
+
         if(!member.getRoles().equals("ADMIN")){
             throw  new CNotOwnerException();
         }
         brandRepository.delete(brand);
+    }
+
+    private Member getMember(String username) {
+        Optional<Member> findMember = memberRepository.findByUsername(username);
+        Member member = findMember.orElseThrow(() -> new CUserNotFoundException());
+        return member;
+    }
+
+    private Brand getBrand(Long id) {
+        Optional<Brand> findBrand = brandRepository.findById(id);
+        return findBrand.orElseThrow(() -> new CResourceNotExistException());
     }
 
     public List<BrandSimpleDto> findAll(){
@@ -64,16 +72,14 @@ public class BrandService {
     }
 
     public BrandDto findById(Long id){
-        Optional<Brand> findBrand = brandRepository.findById(id);
-        Brand brand = findBrand.orElseThrow(() -> new CResourceNotExistException());
+        Brand brand = getBrand(id);
         return BrandDto.createBrandDto(brand);
 
     }
 
     @Transactional
     public void updateBrand(Long id,BrandUpdateDto brandUpdateDto){
-        Optional<Brand> findBrand = brandRepository.findById(id);
-        Brand brand = findBrand.orElseThrow(() -> new CResourceNotExistException());
+        Brand brand = getBrand(id);
         brand.update(brandUpdateDto.getName(),brandUpdateDto.getContent());
 
     }

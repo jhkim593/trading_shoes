@@ -1,4 +1,4 @@
-package jpa.project.repository;
+package jpa.project.repository.board_liked;
 
 import jpa.project.entity.Board_liked;
 import jpa.project.entity.Member;

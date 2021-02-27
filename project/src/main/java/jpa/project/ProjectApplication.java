@@ -17,6 +17,7 @@ public class ProjectApplication {
 		SpringApplication.run(ProjectApplication.class, args);
 	}
 
+
 	@Bean
 	public HiddenHttpMethodFilter hiddenHttpMethodFilter() {
 		HiddenHttpMethodFilter filter = new HiddenHttpMethodFilter();

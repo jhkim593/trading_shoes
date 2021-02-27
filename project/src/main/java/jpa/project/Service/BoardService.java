@@ -8,10 +8,10 @@ import jpa.project.dto.board.BoardDto;
 import jpa.project.entity.Board;
 import jpa.project.entity.Board_liked;
 import jpa.project.entity.Member;
-import jpa.project.repository.custom.BoardRepository;
+import jpa.project.repository.board.BoardRepository;
 import jpa.project.repository.search.BoardSearch;
-import jpa.project.repository.Board_likedRepository;
-import jpa.project.repository.MemberRepository;
+import jpa.project.repository.board_liked.Board_likedRepository;
+import jpa.project.repository.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -37,11 +37,15 @@ public class BoardService {
     @Transactional
     public BoardDto save(String name, BoardCreateRequestDto bcrDto
                          ){
-        Optional<Member> findMember = memberRepository.findByUsername(name);
-        Member member = findMember.orElseThrow(() -> new NoSuchElementException());
+        Member member = getMember(name);
         Board board = Board.addBoard(member, bcrDto);
         boardRepository.save(board);
        return BoardDto.createBoardDto(board);
+    }
+
+    private Member getMember(String name) {
+        Optional<Member> findMember = memberRepository.findByUsername(name);
+        return findMember.orElseThrow(() -> new NoSuchElementException());
     }
 
     @Transactional
@@ -49,8 +53,7 @@ public class BoardService {
             @CacheEvict(value = CacheKey.BOARD,key="#boardId"),
           })
     public BoardDto update(Long boardId,String username,BoardCreateRequestDto boardCreateRequestDto){
-        Optional<Board> findBoard = boardRepository.findById(boardId);
-        Board board = findBoard.orElseThrow(() -> new CResourceNotExistException());
+        Board board = getBoard(boardId);
         if(!board.getMember().getUsername().equals(username)){
             throw new CNotOwnerException();
         }
@@ -59,13 +62,18 @@ public class BoardService {
 
 
     }
+
+    private Board getBoard(Long boardId) {
+        Optional<Board> findBoard = boardRepository.findById(boardId);
+        return findBoard.orElseThrow(() -> new CResourceNotExistException());
+    }
+
     @Transactional
     @Caching(evict = {
             @CacheEvict(value = CacheKey.BOARD,key="#boardId"),
     })
     public void delete(Long boardId,String username){
-        Optional<Board> findBoard = boardRepository.findById(boardId);
-        Board board = findBoard.orElseThrow(() -> new CResourceNotExistException());
+        Board board = getBoard(boardId);
         if(!board.getMember().getUsername().equals(username)){
             throw  new CNotOwnerException();
         }
@@ -86,18 +94,15 @@ public class BoardService {
 
     @Cacheable(value = CacheKey.BOARD,key="#boardId",unless ="#result==null")
     public BoardDto find(Long boardId){
-        Optional<Board> opBoard = boardRepository.findById(boardId);
-        Board board = opBoard.orElseThrow(() -> new CResourceNotExistException());
+        Board board = getBoard(boardId);
         return BoardDto.createBoardDto(board);
     }
 
     @Transactional
 
     public void boardLike(BoardDto boardDto,String name){
-        Optional<Member> findMember = memberRepository.findByUsername(name);
-        Member member = findMember.orElseThrow(() -> new NoSuchElementException());
-        Optional<Board> findBoard = boardRepository.findById(boardDto.getId());
-        Board board = findBoard.orElseThrow(() -> new NoSuchElementException());
+        Member member = getMember(name);
+        Board board = getBoard(boardDto.getId());
         Optional<Board_liked> findBoard_liked = board_likedRepository.findByBoardLike(member.getId(), board.getId());
 
         if(findBoard_liked.isEmpty()) {

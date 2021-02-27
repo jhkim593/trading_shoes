@@ -32,15 +32,16 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom{
     }
 
     @Override
-    public List<OrderSimpleDto> findOrdersByShoesSize(ShoesSizeSearch shoesSizeSearch) {
-      return   queryFactory.select(Projections.constructor(OrderSimpleDto.class,order.createdDate,shoes.name,
-                shoesSize.US,order.price)).from(order)
-                .join(order.registedShoes, registedShoes).fetchJoin()
-                .join(registedShoes.shoesInSize, shoesInSize).fetchJoin()
-                .join(shoesInSize.size, shoesSize).fetchJoin()
-                .join(shoesInSize.shoes, shoes).fetchJoin()
+    public List<OrderSimpleDto> findOrdersByShoesSize(Long shoesId,ShoesSizeSearch shoesSizeSearch) {
+        return queryFactory.select(Projections.constructor(OrderSimpleDto.class, order.createdDate, shoes.name,
+                shoesSize.US, order.price)).from(order)
+                .join(order.registedShoes, registedShoes)
+                .join(registedShoes.shoesInSize, shoesInSize)
+                .join(shoesInSize.size, shoesSize)
+                .join(shoesInSize.shoes, shoes)
                 .where(
                         shoesSizeSearchEq(shoesSizeSearch.getShoesSize())
+                        , shoes.id.eq(shoesId)
                 ).fetch();
     }
 

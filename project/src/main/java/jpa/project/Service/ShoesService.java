@@ -2,16 +2,15 @@ package jpa.project.Service;
 
 import jpa.project.advide.exception.CResourceNotExistException;
 import jpa.project.advide.exception.CShoesAlreadyExistException;
-import jpa.project.advide.exception.CUserNotFoundException;
-import jpa.project.dto.RegistedShoes.RegistedShoesDto;
-import jpa.project.dto.Shoes.ShoesDto;
-import jpa.project.dto.Shoes.ShoesRegisterRequestDto;
-import jpa.project.dto.Shoes.ShoesUpdateDto;
-import jpa.project.dto.Shoes.ShoesWithSizeDto;
+import jpa.project.dto.Shoes.*;
 import jpa.project.entity.*;
-import jpa.project.repository.*;
+import jpa.project.repository.ShoesSize.ShoesSizeRepository;
+import jpa.project.repository.brand.BrandRepository;
+import jpa.project.repository.member.MemberRepository;
+import jpa.project.repository.registedShoes.RegistedShoesRepository;
 import jpa.project.repository.search.ShoesSearch;
 import jpa.project.repository.shoes.ShoesRepository;
+import jpa.project.repository.shoesInSize.ShoesInSizeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -51,8 +50,7 @@ public class ShoesService {
         if(findShoes.isPresent()){
             throw new CShoesAlreadyExistException();
         }
-        Optional<Brand> findBrand = brandRepository.findByName(srrDto.getBrand());
-        Brand brand = findBrand.orElseThrow(() -> new CResourceNotExistException());
+        Brand brand = getBrand(srrDto);
         List<ShoesSize> shoesSizes = shoesSizeRepository.findAll();
         List<ShoesInSize>shoesInSizeList= new ArrayList<>();
         for (ShoesSize shoesSize : shoesSizes) {
@@ -64,12 +62,23 @@ public class ShoesService {
         return ShoesDto.createShoesDto(shoes);
     }
 
+    private Brand getBrand(ShoesRegisterRequestDto srrDto) {
+        Optional<Brand> findBrand = brandRepository.findByName(srrDto.getBrand());
+        Brand brand = findBrand.orElseThrow(() -> new CResourceNotExistException());
+        return brand;
+    }
+
     @Transactional
     public void updateShoes(Long id, ShoesUpdateDto shoesUpdateDto){
-        Optional<Shoes> findShoes = shoesRepository.findById(id);
-        Shoes shoes = findShoes.orElseThrow(CResourceNotExistException::new);
+        Shoes shoes = getShoes(id);
         shoes.update(shoesUpdateDto.getName());
 
+    }
+
+    private Shoes getShoes(Long id) {
+        Optional<Shoes> findShoes = shoesRepository.findById(id);
+        Shoes shoes = findShoes.orElseThrow(CResourceNotExistException::new);
+        return shoes;
     }
 
 
@@ -78,32 +87,18 @@ public class ShoesService {
        shoesRepository.deleteById(id);
    }
 
-   @Transactional
-    public RegistedShoesDto registShoes(String username, Long shoesInSizeId, int price){
-       Optional<Member> findMember = memberRepository.findByUsername(username);
-       Member member = findMember.orElseThrow(CUserNotFoundException::new);
 
-
-       Optional<ShoesInSize> findShoesInSize = shoesInSizeRepository.findById(shoesInSizeId);
-       ShoesInSize shoesInSize = findShoesInSize.orElseThrow(CResourceNotExistException::new);
-
-       RegistedShoes registedShoes = RegistedShoes.createRegistedShoes(member, shoesInSize, price);
-       registedShoesRepository.save(registedShoes);
-       /**최적화**/
-       /****/
-       /****/
-       /****/
-       return RegistedShoesDto.createRegistedShoesDto(shoesInSize.getShoes().getName(),username,shoesInSize.getSize().getUS(),price);
-
-   }
 
    public Page<ShoesDto>search(ShoesSearch shoesSearch, Pageable pageable){
        return shoesRepository.search(shoesSearch,pageable);
    }
-   public ShoesWithSizeDto detailShoes(Long shoesId){
+   public SellShoesDto detailSellShoes(Long shoesId){
 
-      return  shoesRepository.detailShoesWithSizeDto(shoesId);
+      return  shoesRepository.detailSellShoesDto(shoesId);
 
+   }
+   public BuyShoesDto detailBuyShoes(Long shoesId){
+        return shoesRepository.detailBuyShoesDto(shoesId);
    }
 
 }

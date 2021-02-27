@@ -2,7 +2,7 @@ package jpa.project.Service;
 
 import jpa.project.dto.member.MemberDto;
 import jpa.project.entity.Member;
-import jpa.project.repository.MemberRepository;
+import jpa.project.repository.member.MemberRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

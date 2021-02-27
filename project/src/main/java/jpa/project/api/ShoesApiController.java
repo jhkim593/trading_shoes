@@ -6,21 +6,13 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import jpa.project.Service.ResponseService;
 import jpa.project.Service.ShoesService;
-import jpa.project.dto.RegistedShoes.RegistedShoesDto;
-import jpa.project.dto.Shoes.ShoesDto;
-import jpa.project.dto.Shoes.ShoesRegisterRequestDto;
-import jpa.project.dto.Shoes.ShoesUpdateDto;
-import jpa.project.dto.Shoes.ShoesWithSizeDto;
+import jpa.project.dto.Shoes.*;
 import jpa.project.repository.search.ShoesSearch;
 import jpa.project.response.CommonResult;
-import jpa.project.response.ListResult;
 import jpa.project.response.SingleResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.repository.query.Param;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -58,23 +50,17 @@ public class ShoesApiController {
     }
 
 
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "X-AUTH-TOKEN",value = "로그인 성공후 access-token",required = true,dataType = "String",paramType = "header")
-    })
-    @ApiOperation(value ="판매 신발 등록" ,notes = "회원이 판매 할 신발을 등록한다")
-    @PostMapping("/shoes/{id}")
-    public SingleResult<RegistedShoesDto>registShoes(@PathVariable("id")Long id,int price){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-        return responseService.getSingResult(shoesService.registShoes(username,id,price));
-    }
-    @ApiOperation(value ="신발 단건 조회" , notes = "신발 사이즈내 등록상품 단건 조회한다")
-    @GetMapping("/shoes/{id}")
-   public SingleResult<ShoesWithSizeDto>detail(@PathVariable("id")Long id){
-        return responseService.getSingResult(shoesService.detailShoes(id));
+    @ApiOperation(value ="신발 사이즈별 판매입찰 최저가 조회" , notes = "신발 사이즈별 판매입찰 최저가 조회한다")
+    @GetMapping("/shoes/sell/{id}")
+   public SingleResult<SellShoesDto>detailBuyShoes(@PathVariable("id")Long id){
+        return responseService.getSingResult(shoesService.detailSellShoes(id));
     }
 
-
+    @ApiOperation(value ="신발 사이즈별 구매입찰 최대가 조회" , notes = "신발 사이즈별 구매입찰 최대가를 조회한다")
+    @GetMapping("/shoes/buy/{id}")
+    public SingleResult<BuyShoesDto>detailSellShoe(@PathVariable("id")Long id){
+        return responseService.getSingResult(shoesService.detailBuyShoes(id));
+    }
 
 
 

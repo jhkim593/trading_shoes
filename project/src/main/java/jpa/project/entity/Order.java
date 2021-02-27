@@ -32,13 +32,17 @@ public class Order extends BaseTimeEntity{
 
 
 
-    //양방향 불필요
-    @ManyToOne(fetch = FetchType.LAZY)
+    //양방향 불필요 원투원 ?
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="registed_shoes_id")
     private RegistedShoes registedShoes;
 
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
+
+    @OneToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    @JoinColumn(name="delivery_id")
+    private Delivery delivery;
 
 
 
@@ -62,6 +66,9 @@ public class Order extends BaseTimeEntity{
     private void addBuyer(Member buyer) {
         this.buyer=buyer;
         buyer.getPurchases().add(this);
+    }
+    public void addDelivery(Delivery delivery){
+        this.delivery=delivery;
     }
 
     /**

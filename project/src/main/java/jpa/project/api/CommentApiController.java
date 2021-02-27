@@ -17,7 +17,7 @@ import jpa.project.response.SingleResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-@Api(tags = {"7.Comment"})
+@Api(tags = {"8.Comment"})
 @RestController
 @RequiredArgsConstructor
 public class CommentApiController {
@@ -27,6 +27,7 @@ public class CommentApiController {
     @ApiOperation(value = "게시판 댓글조회", notes = "게시판의 댓글들을 조회한다")
     @GetMapping("/comment/{id}")
     public ListResult<CommentDto>findCommentByBoard(@PathVariable("id")Long id){
+
         return responseService.getListResult(commentService.findCommentByBoardId(id));
     }
 
@@ -53,7 +54,7 @@ public class CommentApiController {
             @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "access-token", required = true, dataType = "String", paramType = "header")
     })
     @ApiOperation(value = "댓글 수정", notes = "회원이 댓글을 수정한다")
-    @DeleteMapping("/comment/{id}")
+    @PutMapping("/comment/{id}")
     public CommonResult updateComment(@PathVariable("id")Long id,String content){
         commentService.updateComment(id,content);
         return responseService.getSuccessResult();

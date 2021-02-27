@@ -10,5 +10,5 @@ import java.util.List;
 
 @Repository
 public interface OrderRepositoryCustom {
-    List<OrderSimpleDto> findOrdersByShoesSize(ShoesSizeSearch shoesSize);
+    List<OrderSimpleDto> findOrdersByShoesSize(Long shoesId,ShoesSizeSearch shoesSize);
 }

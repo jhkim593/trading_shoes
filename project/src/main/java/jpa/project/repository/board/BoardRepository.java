@@ -1,7 +1,6 @@
-package jpa.project.repository.custom;
+package jpa.project.repository.board;
 
 import jpa.project.entity.Board;
-import jpa.project.repository.custom.BoardRepositoryCustom;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
