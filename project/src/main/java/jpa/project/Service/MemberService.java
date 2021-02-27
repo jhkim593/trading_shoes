@@ -101,6 +101,8 @@ public class MemberService  {
     }
 
 
+
+
     public MemberDto find(Long id){
         Optional<Member> findMember = memberRepository.findById(id);
         Member member = findMember.orElseThrow(CUserNotFoundException::new);
