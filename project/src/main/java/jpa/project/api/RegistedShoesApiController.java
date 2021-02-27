@@ -5,8 +5,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import jpa.project.Service.RegistedShoesService;
-import jpa.project.Service.ResponseService;
+import jpa.project.service.RegistedShoesService;
+import jpa.project.service.ResponseService;
 import jpa.project.dto.RegistedShoes.RegistedShoesDto;
 import jpa.project.entity.TradeStatus;
 import jpa.project.response.CommonResult;
@@ -14,7 +14,6 @@ import jpa.project.response.SingleResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

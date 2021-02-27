@@ -1,18 +1,5 @@
 package jpa.project.controller;
 
-import jpa.project.dto.board.BoardCreateRequestDto;
-import jpa.project.dto.board.BoardDto;
-import jpa.project.Service.BoardService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
-import java.security.Principal;
-import java.util.List;
-
 //@Controller
 //@RequiredArgsConstructor
 //public class BoardController {

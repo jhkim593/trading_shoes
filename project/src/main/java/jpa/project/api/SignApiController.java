@@ -2,13 +2,9 @@ package jpa.project.api;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import jpa.project.Service.MemberService;
-import jpa.project.Service.ResponseService;
-import jpa.project.Service.SignService;
-import jpa.project.advide.exception.CUsernameSigninFailedException;
+import jpa.project.service.ResponseService;
+import jpa.project.service.SignService;
 import jpa.project.config.security.JwtTokenProvider;
-import jpa.project.dto.member.MemberDto;
 import jpa.project.dto.member.MemberLoginRequestDto;
 import jpa.project.dto.member.MemberLoginResponseDto;
 import jpa.project.dto.member.MemberRegisterRequestDto;

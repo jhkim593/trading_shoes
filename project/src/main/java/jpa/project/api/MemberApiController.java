@@ -1,8 +1,8 @@
 package jpa.project.api;
 
 import io.swagger.annotations.*;
-import jpa.project.Service.MemberService;
-import jpa.project.Service.ResponseService;
+import jpa.project.service.MemberService;
+import jpa.project.service.ResponseService;
 import jpa.project.dto.member.MemberDto;
 import jpa.project.dto.member.MemberRegisterRequestDto;
 import jpa.project.response.CommonResult;

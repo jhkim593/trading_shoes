@@ -1,7 +1,7 @@
 package jpa.project.controller;
 
 import jpa.project.dto.member.MemberDto;
-import jpa.project.Service.MemberService;
+import jpa.project.service.MemberService;
 import jpa.project.dto.member.MemberRegisterRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
