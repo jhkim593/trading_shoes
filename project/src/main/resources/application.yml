@@ -1,5 +1,17 @@
 spring:
+  social:
+    kakao:
+      client_id: f389075420a92087544133981b80ddbb
+      redirect: http://localhost:8080/social/login/kakao
+      url:
+        login: https://kauth.kakao.com/oauth/authorize
+        token: https://kauth.kakao.com/oauth/token
+        profile: https://kapi.kakao.com/v2/user/me
+        logout: https://kapi.kakao.com/v2/user/logout
 
+
+#  url:
+#    base: http://localhost:8080
 
   redis:
     host: localhost
@@ -24,6 +36,8 @@ spring:
     encoding: UTF-8
   jwt:
     secret: govlepel@$&
+
+
 
 
 

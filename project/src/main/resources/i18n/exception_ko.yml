@@ -35,4 +35,7 @@ notEnoughStock:
 shoesAlreadyExist:
   code: "-1010"
   msg: "이미 동일한 이름의 신발이 존재합니다."
+communicationError:
+  code: "-1011"
+  msg: "통신 중 오류가 발생하였습니다."
 

@@ -3,15 +3,15 @@ package jpa.project.service;
 import jpa.project.advide.exception.CNotOwnerException;
 import jpa.project.advide.exception.CResourceNotExistException;
 import jpa.project.cache.CacheKey;
-import jpa.project.dto.board.BoardCreateRequestDto;
-import jpa.project.dto.board.BoardDto;
 import jpa.project.entity.Board;
 import jpa.project.entity.Board_liked;
 import jpa.project.entity.Member;
+import jpa.project.model.dto.board.BoardCreateRequestDto;
+import jpa.project.model.dto.board.BoardDto;
 import jpa.project.repository.board.BoardRepository;
-import jpa.project.repository.search.BoardSearch;
 import jpa.project.repository.board_liked.Board_likedRepository;
 import jpa.project.repository.member.MemberRepository;
+import jpa.project.repository.search.BoardSearch;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -21,8 +21,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -35,10 +33,10 @@ public class BoardService {
     private final MemberRepository memberRepository;
 
     @Transactional
-    public BoardDto save(String name, BoardCreateRequestDto bcrDto
+    public BoardDto save(String name, BoardCreateRequestDto requestDto
                          ){
         Member member = getMember(name);
-        Board board = Board.addBoard(member, bcrDto);
+        Board board = Board.createBoard(member, requestDto.getTitle(),name, requestDto.getContent());
         boardRepository.save(board);
        return BoardDto.createBoardDto(board);
     }
@@ -50,14 +48,13 @@ public class BoardService {
 
     @Transactional
     @Caching(evict = {
-            @CacheEvict(value = CacheKey.BOARD,key="#boardId"),
-          })
+            @CacheEvict(value = CacheKey.BOARD,key="#boardId"),})
     public BoardDto update(Long boardId,String username,BoardCreateRequestDto boardCreateRequestDto){
         Board board = getBoard(boardId);
         if(!board.getMember().getUsername().equals(username)){
             throw new CNotOwnerException();
         }
-        board.update(boardCreateRequestDto);
+        board.update(boardCreateRequestDto.getTitle(),boardCreateRequestDto.getContent());
         return BoardDto.createBoardDto(board);
 
 
@@ -82,24 +79,17 @@ public class BoardService {
     }
 
 
-    public List<BoardDto> findAll(){
-        List<Board> board = boardRepository.findAll();
-        List<BoardDto>boardDtoList=new ArrayList<>();
-       for(Board boards:board){
-           BoardDto boardDto = BoardDto.createBoardDto(boards);
-           boardDtoList.add(boardDto);
-       }
-       return boardDtoList;
-    }
+
+
 
     @Cacheable(value = CacheKey.BOARD,key="#boardId",unless ="#result==null")
     public BoardDto find(Long boardId){
         Board board = getBoard(boardId);
+        board.addView();
         return BoardDto.createBoardDto(board);
     }
 
     @Transactional
-
     public void boardLike(BoardDto boardDto,String name){
         Member member = getMember(name);
         Board board = getBoard(boardDto.getId());

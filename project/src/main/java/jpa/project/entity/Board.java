@@ -1,8 +1,5 @@
 package jpa.project.entity;
 
-import jpa.project.dto.board.BoardCreateRequestDto;
-import jpa.project.dto.board.BoardDto;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -22,10 +19,14 @@ public class Board extends BaseTimeEntity {
     @Column(length = 100, nullable = false)
     private String title;
 
-    @Column(length = 100)
+    @Column(length = 100,nullable = false)
     private String writer;
-    @Column(columnDefinition = "TEXT")
+
+    @Column(nullable = false)
+    @Lob
     private String content;
+
+    private int view;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
@@ -34,7 +35,8 @@ public class Board extends BaseTimeEntity {
     @OneToMany(mappedBy = "board")
     private List<Board_liked> board_likedList = new ArrayList<>();
 
-    @OneToMany
+    @OneToMany(mappedBy = "board")
+    private List<Comment> comments=new ArrayList<>();
 
     public void addMember(Member member) {
         this.member = member;
@@ -43,30 +45,30 @@ public class Board extends BaseTimeEntity {
 
 
 
-    public static Board addBoard(Member member, BoardCreateRequestDto bcrDto){
+    public static Board createBoard(Member member, String title,String writer,String content){
        Board board =new Board();
-       board.update(bcrDto,member);
+       board.title=title;
+       board.writer=writer;
+       board.content= content;
        board.addMember(member);
+       board.view=0;
        return board;
     }
 
 
 
-    public void update(BoardCreateRequestDto bcrDto) {
+    public void update(String title,String content) {
 
-        if(bcrDto.getTitle()!=null){
-            this.title = bcrDto.getTitle();
+        if(title!=null){
+            this.title = title;
         }
-        if(bcrDto.getContent()!=null) {
-            this.content = bcrDto.getContent();
+        if(content!=null) {
+            this.content = content;
         }
 
     }
-    public void update(BoardCreateRequestDto bcrDto,Member member) {
-
-        this.writer=member.getUsername();
-        this.content = bcrDto.getContent();
-        this.title = bcrDto.getTitle();
-
+    public void addView(){
+        this.view++;
     }
+
 }

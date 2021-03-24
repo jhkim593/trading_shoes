@@ -2,8 +2,11 @@ package jpa.project.service;
 
 import jpa.project.advide.exception.CResourceNotExistException;
 import jpa.project.advide.exception.CShoesAlreadyExistException;
-import jpa.project.dto.Shoes.*;
-import jpa.project.entity.*;
+import jpa.project.entity.Brand;
+import jpa.project.entity.Shoes;
+import jpa.project.entity.ShoesInSize;
+import jpa.project.entity.ShoesSize;
+import jpa.project.model.dto.Shoes.*;
 import jpa.project.repository.ShoesSize.ShoesSizeRepository;
 import jpa.project.repository.brand.BrandRepository;
 import jpa.project.repository.member.MemberRepository;
@@ -34,18 +37,10 @@ public class ShoesService {
     private final RegistedShoesRepository registedShoesRepository;
 
 
-//   @Transactional
-//    public ShoesDto saveShoes(ShoesRegisterRequestDto srrDto){
-//       Optional<Brand> findBrand = brandRepository.findByName(srrDto.getName());
-//       Brand brand = findBrand.orElseThrow(() -> new CResourceNotExistException());
-//       Shoes shoes = Shoes.createShoes(srrDto.getName(), brand);
-//       return ShoesDto.createShoesDto(shoes);
-//   }
-
     /**
      CASE CADE 설정 해야함**/
     @Transactional
-    public ShoesDto saveShoes(ShoesRegisterRequestDto srrDto){
+    public ShoesSimpleDto saveShoes(ShoesRegisterRequestDto srrDto){
         Optional<Shoes> findShoes = shoesRepository.findByName(srrDto.getName());
         if(findShoes.isPresent()){
             throw new CShoesAlreadyExistException();
@@ -59,7 +54,7 @@ public class ShoesService {
         Shoes shoes = Shoes.createShoes(srrDto.getName(), brand, shoesInSizeList.get(0), shoesInSizeList.get(1), shoesInSizeList.get(2), shoesInSizeList.get(3), shoesInSizeList.get(4), shoesInSizeList.get(5), shoesInSizeList.get(6)
                 , shoesInSizeList.get(7), shoesInSizeList.get(8), shoesInSizeList.get(9), shoesInSizeList.get(10));
         shoesRepository.save(shoes);
-        return ShoesDto.createShoesDto(shoes);
+        return ShoesSimpleDto.createShoesDto(shoes);
     }
 
     private Brand getBrand(ShoesRegisterRequestDto srrDto) {
@@ -89,16 +84,15 @@ public class ShoesService {
 
 
 
-   public Page<ShoesDto>search(ShoesSearch shoesSearch, Pageable pageable){
+   public Page<ShoesSimpleDto>search(ShoesSearch shoesSearch, Pageable pageable){
        return shoesRepository.search(shoesSearch,pageable);
    }
-   public SellShoesDto detailSellShoes(Long shoesId){
-
-      return  shoesRepository.detailSellShoesDto(shoesId);
+   @Transactional
+   public ShoesDto detailSellShoes(Long shoesId){
+        getShoes(shoesId).addView();
+        return  shoesRepository.detailShoesDto(shoesId);
 
    }
-   public BuyShoesDto detailBuyShoes(Long shoesId){
-        return shoesRepository.detailBuyShoesDto(shoesId);
-   }
+
 
 }

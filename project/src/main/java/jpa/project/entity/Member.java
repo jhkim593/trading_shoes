@@ -1,27 +1,21 @@
 package jpa.project.entity;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import jpa.project.dto.member.MemberDto;
-import jpa.project.dto.member.MemberRegisterRequestDto;
+import jpa.project.model.dto.member.MemberRegisterRequestDto;
 import lombok.*;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Entity
 @Getter
 
 @Builder
+@Setter
 
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Member extends BaseTimeEntity implements UserDetails {
+public class Member extends BaseTimeEntity {
     @Id  @GeneratedValue
     @Column(name="member_id")
     private Long id;
@@ -31,8 +25,11 @@ public class Member extends BaseTimeEntity implements UserDetails {
 
 //    @Column( nullable = false)
     private String password;
-    @Column(length = 150)
+
+    @Column(length = 150,nullable = false)
     private String email;
+
+    private String provider;
 
     private String refreshToken;
 
@@ -68,11 +65,11 @@ public class Member extends BaseTimeEntity implements UserDetails {
 
 
     //멤버 요소 추가?
-    public Member(MemberRegisterRequestDto mrrDto) {
+    public Member(String username,String password,String email) {
 
-        this.username = mrrDto.getUsername();
-        this.password = mrrDto.getPassword();
-        this.email=mrrDto.getEmail();
+        this.username = username;
+        this.password = password;
+        this.email=email;
     }
     public void update(MemberRegisterRequestDto mrrDto){
         if(mrrDto.getUsername()!=null){
@@ -86,39 +83,6 @@ public class Member extends BaseTimeEntity implements UserDetails {
         }
     }
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return this.roles.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
-    }
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @Override
-    public String getUsername(){
-        return this.username;
-    }
-
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
 
 
     public void changeRefreshToken(String refreshToken) {

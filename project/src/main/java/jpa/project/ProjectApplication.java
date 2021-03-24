@@ -29,7 +29,9 @@ public class ProjectApplication {
 		}
 
 	@Bean
-	public RestTemplate restTemplate() {
+	public RestTemplate getRestTemplate() {
 		return new RestTemplate();
 	}
+
+
 }

@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-
 import javax.persistence.*;
 
 @Entity
@@ -32,7 +31,6 @@ public class Order extends BaseTimeEntity{
 
 
 
-    //양방향 불필요 원투원 ?
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="registed_shoes_id")
     private RegistedShoes registedShoes;
@@ -46,15 +44,16 @@ public class Order extends BaseTimeEntity{
 
 
 
-    public static Order createOrder(Member buyer,Member seller,RegistedShoes registedShoes){
+    public static Order createOrder(Member buyer,RegistedShoes registedShoes){
         Order order=new Order();
         order.addBuyer(buyer);
         order.price= registedShoes.getPrice();
-        order.addSeller(seller);
+        order.addSeller(registedShoes.getMember());
         order.registedShoes=registedShoes;
+        Delivery delivery = Delivery.createDelivery(buyer.getAddress(), DeliveryStatus.Ordered);
+        order.addDelivery(delivery);
+        order.orderStatus=OrderStatus.Progress;
         registedShoes.order();
-
-
         return order;
     }
 
@@ -69,7 +68,17 @@ public class Order extends BaseTimeEntity{
     }
     public void addDelivery(Delivery delivery){
         this.delivery=delivery;
+        delivery.addOrder(this);
     }
+    public void addDeliveryInfo(String number,String company){
+        this.delivery.update(number,company);
+        updateDelivery(DeliveryStatus.ShippingToUs);
+    }
+    public void updateDelivery(DeliveryStatus deliveryStatus){
+        this.delivery.updateDelivery(deliveryStatus);
+    }
+    public void updateOrderStatus(OrderStatus orderStatus){this.orderStatus=orderStatus;}
+
 
     /**
      * order와 registedshoes 연관관계 메소드 필요?**/

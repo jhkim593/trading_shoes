@@ -18,6 +18,8 @@ public class Comment extends BaseTimeEntity{
     @Id @GeneratedValue
     private Long id;
 
+    @Column(nullable = false)
+    @Lob
     private String content;
 
     @Enumerated(value = EnumType.STRING)

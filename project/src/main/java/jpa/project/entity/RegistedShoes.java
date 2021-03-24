@@ -19,13 +19,6 @@ public class RegistedShoes extends BaseTimeEntity {
     private Long id;
 
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "shoes_id")
-//    private Shoes shoes;
-//
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name="size_id")
-//    private ShoesSize size;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
@@ -60,19 +53,15 @@ public class RegistedShoes extends BaseTimeEntity {
 
         return registedShoes;
     }
+    public void deleteRegistedShoes(){
+        this.shoesStatus=ShoesStatus.COMP;
+        this.shoesInSize.deleteStockQuantity();
+    }
 
     public void addShoesInSize(ShoesInSize shoesInSize) {
         this.shoesInSize = shoesInSize;
         shoesInSize.getRegistedShoes().add(this);
-        if (this.tradeStatus.equals(TradeStatus.SELL)) {
-            if (shoesInSize.getLowestPrice() == 0 || shoesInSize.getLowestPrice() > this.getPrice()) {
-                shoesInSize.changeLowestPrice(this.getPrice());
-            }
-        } else {
-            if (shoesInSize.getHighestPrice() == 0 || shoesInSize.getHighestPrice() < this.getPrice()) {
-                shoesInSize.changeHighestPrice(this.getPrice());
-            }
-        }
+
     }
 
 
@@ -86,20 +75,11 @@ public class RegistedShoes extends BaseTimeEntity {
             throw new CNotEnoughStockException();
         }
         this.shoesStatus = ShoesStatus.COMP;
-        this.shoesInSize.order();
+        this.shoesInSize.deleteStockQuantity();
+    }
+    public void changePrice(int price){
+        this.price=price;
     }
 
-    public void changePrice(int price, TradeStatus tradeStatus, ShoesInSize shoesInSize) {
-        this.price = price;
-        if (tradeStatus.equals(TradeStatus.SELL)) {
-            if (shoesInSize.getLowestPrice() == 0 || shoesInSize.getLowestPrice() > price) {
-                shoesInSize.changeLowestPrice(price);
-            }
-        } else {
-            if (shoesInSize.getHighestPrice() == 0 || shoesInSize.getHighestPrice() < price) {
-                shoesInSize.changeHighestPrice(price);
-            }
 
-        }
-    }
 }

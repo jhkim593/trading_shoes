@@ -4,10 +4,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,13 +16,17 @@ public class Brand extends BaseTimeEntity{
     @GeneratedValue
     private Long id;
 
+    @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false)
+    @Lob
     private String content;
 
     @OneToMany(mappedBy ="brand")
     private List<Shoes> shoes=new ArrayList<>();
 
+    @Column(nullable = false)
     private int stockQuantity;
 
 

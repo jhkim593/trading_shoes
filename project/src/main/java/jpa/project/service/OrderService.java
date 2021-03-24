@@ -3,20 +3,29 @@ package jpa.project.service;
 import jpa.project.advide.exception.COrderNotFoundException;
 import jpa.project.advide.exception.CResourceNotExistException;
 import jpa.project.advide.exception.CUserNotFoundException;
-import jpa.project.dto.order.OrderDto;
-import jpa.project.dto.order.OrderSimpleDto;
-import jpa.project.entity.*;
+import jpa.project.cache.CacheKey;
+import jpa.project.entity.DeliveryStatus;
+import jpa.project.entity.Member;
+import jpa.project.entity.Order;
+import jpa.project.entity.RegistedShoes;
+import jpa.project.model.dto.delivery.DeliveryRegisterRequestDto;
+import jpa.project.model.dto.order.OrderDto;
+import jpa.project.model.dto.order.OrderSimpleDto;
 import jpa.project.repository.member.MemberRepository;
-import jpa.project.repository.Order.OrderRepository;
+import jpa.project.repository.order.OrderRepository;
 import jpa.project.repository.registedShoes.RegistedShoesRepository;
+import jpa.project.repository.search.OrderSearch;
 import jpa.project.repository.search.ShoesSizeSearch;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -25,41 +34,87 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final MemberRepository memberRepository;
     private final RegistedShoesRepository registedShoesRepository;
+    private final CacheService cacheService;
+
 
     @Transactional
     public OrderDto save(String username,Long registedShoesId){
-        Optional<Member> findMember = memberRepository.findByUsername(username);
-        Member member = findMember.orElseThrow(CUserNotFoundException::new);
-        Optional<RegistedShoes> findRegistedShoes = registedShoesRepository.findById(registedShoesId);
-        RegistedShoes registedShoes = findRegistedShoes.orElseThrow(CResourceNotExistException::new);
-        Order order = Order.createOrder(member, registedShoes.getMember(), registedShoes);
-        int changePrice = registedShoesRepository.findSellOrderByPrice();
-        registedShoes.getShoesInSize().changeLowestPrice(changePrice);
+        Member member = getMember(username);
+        RegistedShoes registedShoes = getRegistedShoes(registedShoesId);
+        Order order = Order.createOrder(member, registedShoes);
+        cacheService.deleteOrderCache(order.getBuyer().getId(),order.getSeller().getId(),order.getRegistedShoes().getShoesInSize().getShoes().getId(),order.getId());
+        registedShoes.deleteRegistedShoes();
+        changeShoesPrice(registedShoes);
         orderRepository.save(order);
         return OrderDto.createOrderDto(order);
 
     }
 
-//    public OrderSimpleDto findOrder(String username){
+    private void changeShoesPrice(RegistedShoes registedShoes) {
+        int lowestPriceInShoes = registedShoesRepository.findLowestPriceInShoes(registedShoes.getShoesInSize().getShoes().getId());
+        registedShoes.getShoesInSize().getShoes().changePrice(lowestPriceInShoes);
+    }
+
+    private RegistedShoes getRegistedShoes(Long registedShoesId) {
+        Optional<RegistedShoes> findRegistedShoes = registedShoesRepository.findById(registedShoesId);
+        RegistedShoes registedShoes = findRegistedShoes.orElseThrow(CResourceNotExistException::new);
+        return registedShoes;
+    }
+
+    private Member getMember(String username) {
+        Optional<Member> findMember = memberRepository.findByUsername(username);
+        Member member = findMember.orElseThrow(CUserNotFoundException::new);
+        return member;
+    }
+
+    //    public OrderSimpleDto findOrder(String username){
 //        Optional<Member> findMember = memberRepository.findByUsername(username);
 //        Member member = findMember.orElseThrow(CUserNotFoundException::new);
 //
 //        member.
 //
 //    }
+    @Cacheable(value = CacheKey.ORDER, key = "#orderId",unless ="#result==null")
     public OrderDto detail(Long orderId){
-        Optional<Order> findOrder = orderRepository.findById(orderId);
-        Order order = findOrder.orElseThrow(COrderNotFoundException::new);
+        Order order = getOrder(orderId);
         return OrderDto.createOrderDto(order);
 
     }
-    public List<OrderSimpleDto> findPurchasedOrder(Long memberId){
-       return orderRepository.findPurChasOrderOrderByCreatedDate(memberId).stream().map(c -> OrderSimpleDto.createOrderSimpleDto(c)).collect(Collectors.toList());
+    //판매자 배송정보 입력
+    @Transactional
+    public void addDeliveryInfo(Long orderId, DeliveryRegisterRequestDto registerRequestDto){
+        Order order = getOrder(orderId);
+        cacheService.deleteOrderCache(order.getBuyer().getId(),order.getSeller().getId(),order.getRegistedShoes().getShoesInSize().getShoes().getId(),orderId);
+        order.addDeliveryInfo(registerRequestDto.getTrackingNumber(),registerRequestDto.getCompany());
 
     }
-    public  List<OrderSimpleDto>findSoldOrder(Long memberId){
+    //관리자 주문상태 변경
+    @Transactional
+    public void updateOrder(Long orderId,DeliveryStatus deliveryStatus){
+        Order order = getOrder(orderId);
+        cacheService.deleteOrderCache(order.getBuyer().getId(),order.getSeller().getId(),order.getRegistedShoes().getShoesInSize().getShoes().getId(),orderId);
+        order.updateDelivery(deliveryStatus);
 
-        return orderRepository.findSalesOrderOrderByCreatedDate(memberId).stream().map(c->OrderSimpleDto.createOrderSimpleDto(c)).collect(Collectors.toList());
+    }
+
+    private Order getOrder(Long orderId) {
+        Optional<Order> findOrder = orderRepository.findById(orderId);
+        Order order = findOrder.orElseThrow(COrderNotFoundException::new);
+        return order;
+    }
+    public Page<OrderDto> findAllOrder(OrderSearch orderSearch, Pageable pageable){
+        return orderRepository.findAllOrder(pageable,orderSearch);
+    }
+
+    @Cacheable(value = CacheKey.ORDERS_PURCHASE, key = "{#memberId, #limit, #lastOrderId}",unless ="#result==null")
+    public Slice<OrderSimpleDto> findPurchasedOrder(Long memberId,Long lastOrderId,int limit){
+       return orderRepository.findPurChasOrderOrderByCreatedDate(memberId,lastOrderId!=null?lastOrderId:Long.MAX_VALUE, PageRequest.of(0, limit)).map(c -> OrderSimpleDto.createOrderSimpleDto(c));
+
+    }
+    @Cacheable(value = CacheKey.ORDERS_SALES, key = "{#memberId, #limit, #lastOrderId}",unless ="#result==null")
+    public  Slice<OrderSimpleDto>findSoldOrder(Long memberId,Long lastOrderId,int limit){
+
+        return orderRepository.findSalesOrderOrderByCreatedDate(memberId,lastOrderId!=null?lastOrderId:Long.MAX_VALUE, PageRequest.of(0, limit)).map(c -> OrderSimpleDto.createOrderSimpleDto(c));
     }
 
     /**캐시**/
@@ -68,7 +123,8 @@ public class OrderService {
 //    }
     //신발 거래된 주문표시
 
-    public List<OrderSimpleDto>findOrdersByShoesSize(Long shoesId,ShoesSizeSearch shoesSizeSearch){
-        return orderRepository.findOrdersByShoesSize(shoesId,shoesSizeSearch);
+    @Cacheable(value = CacheKey.ORDERS, key = "#shoesId",unless ="#result==null")
+    public Slice<OrderSimpleDto>findOrdersByShoesSize(Long shoesId,Long lastOrderId,ShoesSizeSearch shoesSizeSearch,int limit){
+        return orderRepository.findOrdersByShoesSize(shoesId, lastOrderId != null ? lastOrderId : Long.MAX_VALUE, shoesSizeSearch, PageRequest.of(0, limit));
     }
 }

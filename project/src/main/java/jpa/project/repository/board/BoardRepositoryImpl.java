@@ -4,7 +4,7 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import jpa.project.dto.board.BoardDto;
+import jpa.project.model.dto.board.BoardDto;
 import jpa.project.entity.Board;
 import jpa.project.repository.search.BoardSearch;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +31,7 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
 
     @Override
     public Page<BoardDto> search(BoardSearch boardSearch, Pageable pageable) {
+
 
         List<BoardDto> fetch = queryFactory.select(Projections.bean(BoardDto.class,
                  board.id
@@ -64,13 +65,7 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
     }
 
 
-//    @Override
-//    public List<BoardDto> searchTest(BoardSearch boardSearch){
-//        return  em.createQuery("select new jpa.project.dto.BoardDto(b.id,b.writer,b.title,b.content,b.createdDate,count(l)) " +
-//               "from Board b join b.board_likedList l",BoardDto.class).getResultList();
 //
-//
-//    }
 
 
 

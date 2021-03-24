@@ -43,10 +43,12 @@ dependencies {
 	//message properties를 yml로
 	implementation 'net.rakugakibox.util:yaml-resource-bundle:1.1'
 
+	//카카오 연동시 결과 json 객체매핑
+	implementation 'com.google.code.gson:gson'
 
 
 	compileOnly 'org.projectlombok:lombok'
-	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
 	runtimeOnly 'com.h2database:h2'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {

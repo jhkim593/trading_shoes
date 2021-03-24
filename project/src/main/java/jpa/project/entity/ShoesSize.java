@@ -22,9 +22,6 @@ public class ShoesSize {
 
    private String US;
 
-//   @OneToMany(mappedBy = "size")
-//   private List<RegistedShoes> registedShoes=new ArrayList<>();
-
     @OneToMany(mappedBy = "size")
     private List<ShoesInSize> shoesInSizes=new ArrayList<>();
 

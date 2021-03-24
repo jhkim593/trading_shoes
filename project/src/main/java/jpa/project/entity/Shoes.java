@@ -3,7 +3,6 @@ package jpa.project.entity;
 import jpa.project.advide.exception.CNotEnoughStockException;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.security.core.parameters.P;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -52,6 +51,7 @@ public static Shoes createShoes(String name,Brand brand,ShoesInSize...shoesInSiz
         Shoes shoes=new Shoes();
         shoes.name=name;
         shoes.stockQuantity=0;
+        shoes.view=0;
         shoes.addBrand(brand);
     for (ShoesInSize shoesInSize : shoesInSizes) {
         shoesInSize.addShoes(shoes);
@@ -81,9 +81,9 @@ public static Shoes createShoes(String name,Brand brand,ShoesInSize...shoesInSiz
     this.view+=1;
     }
 
-    public void order() {
-        int restStock=this.stockQuantity-=1;
-        if(restStock<=0){
+    public void deleteStockQuantity() {
+        int restStock=this.stockQuantity-1;
+        if(restStock<0){
             throw new CNotEnoughStockException();
         }
         this.stockQuantity-=1;
@@ -95,8 +95,6 @@ public static Shoes createShoes(String name,Brand brand,ShoesInSize...shoesInSiz
     }
 
     }
-    public void justChangePrice(int price){
-        this.price=price;
-    }
+
 }
 

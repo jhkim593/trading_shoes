@@ -29,16 +29,13 @@ public class ShoesInSize {
 
     private int stockQuantity;
 
-    private int lowestPrice;
-
-    private int highestPrice;
 
 
     public static ShoesInSize createShoesInSize(ShoesSize shoesSize){
         ShoesInSize shoesInSize=new ShoesInSize();
         shoesInSize.stockQuantity=0;
         shoesInSize.addShoesSize(shoesSize);
-        shoesInSize.lowestPrice=0;
+
         return shoesInSize;
 
     }
@@ -59,23 +56,17 @@ public class ShoesInSize {
         this.getShoes().addStock();
     }
 
-    public void order() {
-        int restStock=this.stockQuantity-=1;
-        if(restStock<=0){
+    public void deleteStockQuantity() {
+        int restStock=this.stockQuantity-1;
+        if(restStock<0){
             throw new CNotEnoughStockException();
         }
         this.stockQuantity-=1;
-        this.getShoes().order();
+        this.getShoes().deleteStockQuantity();
     }
 
-    public void changeLowestPrice(int price) {
-        this.lowestPrice=price;
-        this.getShoes().changePrice(price);
-    }
-    public void justChangeLowestPrice(int price){
 
-        this.lowestPrice=price;
-        this.getShoes().justChangePrice(price);
-    }
-    public void changeHighestPrice(int price){this.highestPrice=price;}
+
+
+
 }

@@ -18,7 +18,8 @@ public class Delivery extends BaseTimeEntity{
     @Id @GeneratedValue
     private Long id;
 
-    private Long number;
+
+    private String trackingNumber;
 
     @OneToOne(mappedBy = "delivery",fetch = LAZY)
     private Order order;
@@ -31,17 +32,24 @@ public class Delivery extends BaseTimeEntity{
     @Embedded
     private Address address;
 
-    public static Delivery createDelivery(Long number,String company,Order order,DeliveryStatus deliveryStatus){
+    public static Delivery createDelivery(Address address,DeliveryStatus deliveryStatus){
        Delivery delivery=new Delivery();
-       delivery.number=number;
-       delivery.company=company;
-       delivery.addOrder(order);
        delivery.deliveryStatus=deliveryStatus;
-       delivery.address=order.getBuyer().getAddress();
+       delivery.address=address;
        return delivery;
     }
     public void addOrder(Order order){
         this.order=order;
-        order.addDelivery(this);
+
+    }
+
+    public void update(String number, String company) {
+        this.trackingNumber=number;
+        this.company=company;
+        this.deliveryStatus=DeliveryStatus.ShippingToUs;
+    }
+
+    public void updateDelivery(DeliveryStatus deliveryStatus) {
+        this.deliveryStatus=deliveryStatus;
     }
 }

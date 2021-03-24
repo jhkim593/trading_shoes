@@ -41,7 +41,7 @@ public class ExceptionAdvice {
 
 
     @ExceptionHandler(CUserNotFoundException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     protected CommonResult userNotFoundException(HttpServletRequest request,CUserNotFoundException e){
         return responseService.getFailResult(Integer.valueOf(getMessage("userNotFound.code")),getMessage("userNotFound.msg"));
 
@@ -63,31 +63,36 @@ public class ExceptionAdvice {
     }
 
     @ExceptionHandler(CAuthenticationEntryPointException.class)
-    public CommonResult authenticationEntryPointException(HttpServletRequest request,CAuthenticationEntryPointException e){
+    protected CommonResult authenticationEntryPointException(HttpServletRequest request,CAuthenticationEntryPointException e){
         return responseService.getFailResult(Integer.valueOf(getMessage("entryPointException.code")),getMessage("entryPointException.msg"));
     }
     @ExceptionHandler(AccessDeniedException.class)
-    public CommonResult accessDeniedException(HttpServletRequest request,AccessDeniedException e){
+    protected CommonResult accessDeniedException(HttpServletRequest request,AccessDeniedException e){
             return responseService.getFailResult(Integer.valueOf(getMessage("accessDenied.code")), getMessage("accessDenied.msg"));
 
     }
     @ExceptionHandler(COrderNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public CommonResult orderNotFound(HttpServletRequest request,AccessDeniedException e){
+    protected CommonResult orderNotFound(HttpServletRequest request,AccessDeniedException e){
         return responseService.getFailResult(Integer.valueOf(getMessage("orderNotFound.code")), getMessage("orderNotFound.msg"));
 
     }
     @ExceptionHandler(CNotEnoughStockException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public CommonResult notEnoughStock(HttpServletRequest request,AccessDeniedException e){
+    protected CommonResult notEnoughStock(){
         return responseService.getFailResult(Integer.valueOf(getMessage("notEnoughStock.code")), getMessage("notEnoughStock.msg"));
 
     }
     @ExceptionHandler(CShoesAlreadyExistException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public CommonResult shoesAlreadyExist(HttpServletRequest request,AccessDeniedException e){
-        return responseService.getFailResult(Integer.valueOf(getMessage("notEnoughStock.code")), getMessage("notEnoughStock.msg"));
+    protected CommonResult shoesAlreadyExist(){
+        return responseService.getFailResult(Integer.valueOf(getMessage("shoesAlreadyExist.code")), getMessage("shoesAlreadyExist.msg"));
 
+    }
+    @ExceptionHandler(CCommunicationException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    protected CommonResult communicationException(HttpServletRequest request, CCommunicationException e){
+        return responseService.getFailResult(Integer.valueOf(getMessage("communicationError.code")), getMessage("communicationError.msg"));
     }
 
 

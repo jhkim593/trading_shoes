@@ -5,11 +5,11 @@ import jpa.project.advide.exception.CUserAlreadyExistException;
 import jpa.project.advide.exception.CUserNotFoundException;
 import jpa.project.cache.CacheKey;
 import jpa.project.config.security.JwtTokenProvider;
-import jpa.project.dto.member.MemberLoginRequestDto;
-import jpa.project.dto.member.MemberLoginResponseDto;
-import jpa.project.dto.member.MemberRegisterRequestDto;
-import jpa.project.dto.member.MemberRegisterResponseDto;
 import jpa.project.entity.Member;
+import jpa.project.model.dto.member.MemberLoginRequestDto;
+import jpa.project.model.dto.member.MemberLoginResponseDto;
+import jpa.project.model.dto.member.MemberRegisterRequestDto;
+import jpa.project.model.dto.member.MemberRegisterResponseDto;
 import jpa.project.repository.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -28,16 +28,9 @@ public class SignService {
     private final JwtTokenProvider jwtTokenProvider;
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
-//    private MemberLoginResponseDto signUp(MemberRegisterRequestDto requestDto){
-//
-//    }
+    private final KakaoService kakaoService;
 
-    @Transactional
-    public void logoutMember(String token){
-        redisTemplate.opsForValue().set(CacheKey.TOKEN + ":" + token, "v", jwtTokenProvider.getRemainingSeconds(token));
-        Member member = memberRepository.findById(Long.valueOf(jwtTokenProvider.getMemberPk(token))).orElseThrow(CUserNotFoundException::new);
-        member.changeRefreshToken("invalid");
-    }
+
     @Transactional
     public MemberLoginResponseDto refreshToken(String token,String refreshToken){
         if(!jwtTokenProvider.validateTokenExceptExpiration(token))throw new AccessDeniedException("");
@@ -49,7 +42,7 @@ public class SignService {
     }
 
     @Transactional
-    public MemberLoginResponseDto login(MemberLoginRequestDto requestDto){
+    public MemberLoginResponseDto signin(MemberLoginRequestDto requestDto){
         Member member = memberRepository.findByUsername(requestDto.getUsername()).orElseThrow(CUserNotFoundException::new);
         if(!passwordEncoder.matches(requestDto.getPassword(), member.getPassword())){
             throw new CLoginFailureException();
@@ -82,6 +75,47 @@ public class SignService {
         if(memberRepository.findByUsername(username).isPresent())throw new CUserAlreadyExistException();
 
     }
+    private void validMemberByProvider(String idByProvider,String provider){
+        if(memberRepository.findByUsernameAndProvider(idByProvider, provider).isPresent()){
+            throw new CUserAlreadyExistException();
+        }
+    }
 
+
+    public MemberLoginResponseDto socialLogin(String accessToken, String provider) {
+        String idByProvider = getIdByProvider(accessToken, provider);
+        Member member = memberRepository.findByUsernameAndProvider(idByProvider, provider).orElseThrow(CUserNotFoundException::new);
+        String token = jwtTokenProvider.createToken(String.valueOf(member.getId()), member.getRoles());
+        member.changeRefreshToken(jwtTokenProvider.createRefreshToken());
+        return new MemberLoginResponseDto(member.getId(),token,member.getRefreshToken());
+
+    }
+
+    public String getIdByProvider(String accessToken,String provider){
+       if(provider.equals("kakao")){
+           return kakaoService.getKakaoProfile(accessToken).getId();
+       }
+       throw new CLoginFailureException();
+    }
+
+
+    @Transactional
+    public  MemberRegisterResponseDto socialSignup(String accessToken,String provider,String name) {
+        String idByProvider = getIdByProvider(accessToken, provider);
+        validMemberByProvider(idByProvider,provider);
+        Member member  = memberRepository.save(Member.builder()
+                .username(idByProvider)
+                .provider(provider)
+                .email(name)
+                .roles(Collections.singletonList("ROLE_USER"))
+                .build());
+        return new MemberRegisterResponseDto(member.getId(),member.getUsername(),member.getEmail());
+    }
+    @Transactional
+    public void logoutUser(String token) {
+        redisTemplate.opsForValue().set(CacheKey.TOKEN + ":" + token, "v", jwtTokenProvider.getRemainingSeconds(token));
+       Member member = memberRepository.findById(Long.valueOf(jwtTokenProvider.getMemberPk(token))).orElseThrow(CUserNotFoundException::new);
+        member.changeRefreshToken("invalidate");
+    }
 
 }

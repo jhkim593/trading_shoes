@@ -4,11 +4,9 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-//import jpa.project.dto.RegistedShoes.RegistedShoesSimpleDto;
-import jpa.project.dto.Shoes.BuyShoesDto;
-import jpa.project.dto.Shoes.SellShoesDto;
-import jpa.project.dto.Shoes.ShoesDto;
-import jpa.project.entity.*;
+import jpa.project.entity.Shoes;
+import jpa.project.model.dto.Shoes.ShoesDto;
+import jpa.project.model.dto.Shoes.ShoesSimpleDto;
 import jpa.project.repository.search.ShoesSearch;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -16,14 +14,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.support.PageableExecutionUtils;
 
 import javax.persistence.EntityManager;
-
 import java.util.List;
 
-import static jpa.project.entity.QBrand.*;
-import static jpa.project.entity.QShoes.*;
-import static jpa.project.entity.QShoesInSize.*;
-import static jpa.project.entity.QShoesSize.*;
-import static org.springframework.util.StringUtils.*;
+import static jpa.project.entity.QBrand.brand;
+import static jpa.project.entity.QShoes.shoes;
+import static jpa.project.entity.QShoesInSize.shoesInSize;
+import static jpa.project.entity.QShoesSize.shoesSize;
+import static org.springframework.util.StringUtils.hasText;
+
 
 
 public class ShoesRepositoryImpl implements ShoesRepositoryCustom {
@@ -36,8 +34,8 @@ public class ShoesRepositoryImpl implements ShoesRepositoryCustom {
     }
 
     @Override
-    public Page<ShoesDto> search(ShoesSearch shoesSearch, Pageable pageable) {
-        List<ShoesDto> shoesDto = queryFactory.select(Projections.bean(ShoesDto.class,
+    public Page<ShoesSimpleDto> search(ShoesSearch shoesSearch, Pageable pageable) {
+        List<ShoesSimpleDto> shoesSimpleDto = queryFactory.select(Projections.bean(ShoesSimpleDto.class,
                 shoes.id,
                 shoes.name,
                 brand.name.as("brand"),
@@ -56,9 +54,10 @@ public class ShoesRepositoryImpl implements ShoesRepositoryCustom {
                 .join(shoes.brand, brand).fetchJoin()
                 .where(shoesnameEq(shoesSearch.getShoesname()),
                         brandnameEq(shoesSearch.getBrandname()));
-        return PageableExecutionUtils.getPage(shoesDto,pageable,()->count.fetchCount());
+        return PageableExecutionUtils.getPage(shoesSimpleDto,pageable,()->count.fetchCount());
 
     }
+
 
 
 
@@ -74,24 +73,7 @@ public class ShoesRepositoryImpl implements ShoesRepositoryCustom {
 
 
 
-//    }
 //
-//    public List<RegistedShoesSimpleDto> findRegistedShoes(Long shoesInSizeId){
-//      return  queryFactory.select(Projections.constructor(RegistedShoesSimpleDto.class,
-//                registedShoes.id,
-//                registedShoes.price)).from(registedShoes).where(registedShoes.shoesStatus.eq(ShoesStatus.BID))
-//                .fetch();
-//    }
-//
-//    public List<ShoesInSizeDto>findShoesInSize(Long ShoesId){
-//        return queryFactory.select(Projections.constructor(ShoesInSizeDto.class,
-//                shoesInSize.id
-//                ,shoesSize.US
-//                ,shoesInSize.stockQuantity
-//                ,shoesInSize.lowestPrice)).from(shoesInSize)
-//                .rightJoin(shoesInSize.size, shoesSize ).fetchJoin().fetch();
-
-//    }
     public Shoes detailShoes(Long id){
         Shoes detailShoes = queryFactory.selectFrom(shoes).distinct()
                 .join(shoes.shoesInSizes, shoesInSize).fetchJoin()
@@ -102,16 +84,12 @@ public class ShoesRepositoryImpl implements ShoesRepositoryCustom {
         return detailShoes;
     }
     @Override
-    public SellShoesDto detailSellShoesDto(Long id) {
-        Shoes detailShoes= detailShoes(id);
-        return new SellShoesDto(detailShoes);
-//        QShoes.shoes.stream().map(s->new SellShoesWithSizeDto(s)).collect(Collectors.toList());
-    }
-    @Override
-    public BuyShoesDto detailBuyShoesDto(Long shoesId) {
+    public ShoesDto detailShoesDto(Long shoesId) {
         Shoes detailShoes= detailShoes(shoesId);
-        return new BuyShoesDto(detailShoes);
+        return new ShoesDto(detailShoes);
+
     }
+
 
 
 

@@ -2,16 +2,19 @@ package jpa.project.service;
 
 import jpa.project.advide.exception.CResourceNotExistException;
 import jpa.project.advide.exception.CUserNotFoundException;
-import jpa.project.dto.comment.CommentCreateRequestDto;
-import jpa.project.dto.comment.CommentDto;
+import jpa.project.cache.CacheKey;
 import jpa.project.entity.Board;
 import jpa.project.entity.Comment;
 import jpa.project.entity.DeleteStatus;
 import jpa.project.entity.Member;
-import jpa.project.repository.member.MemberRepository;
-import jpa.project.repository.comment.CommentRepository;
+import jpa.project.model.dto.comment.CommentCreateRequestDto;
+import jpa.project.model.dto.comment.CommentDto;
 import jpa.project.repository.board.BoardRepository;
+import jpa.project.repository.comment.CommentRepository;
+import jpa.project.repository.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,8 +27,10 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final MemberRepository memberRepository;
     private final BoardRepository boardRepository;
+    private final CacheService cacheService;
 
     @Transactional
+    @CacheEvict(value = CacheKey.COMMENTS, key = "#requestDto.ticketId")
     public CommentDto saveComment(CommentCreateRequestDto requestDto){
         Member member = getMember(requestDto);
         Board board = getBoard(requestDto.getBoardId());
@@ -49,6 +54,7 @@ public class CommentService {
         return member;
     }
 
+    @Cacheable(value = CacheKey.COMMENTS, key = "#boardId")
     public List<CommentDto> findCommentByBoardId(Long boardId){
         getBoard(boardId);
         List<Comment> findComments = commentRepository.findCommentsByBoardId(boardId);
@@ -69,6 +75,7 @@ public class CommentService {
     @Transactional
     public void deleteComment(Long commentId){
         Comment comment = commentRepository.findById(commentId).orElseThrow(CResourceNotExistException::new);
+        cacheService.deleteCommentCache(comment.getBoard().getId());
         if(comment.getChild().size()==0){
             commentRepository.delete(deleteAble(comment));}
         else{
@@ -87,6 +94,7 @@ public class CommentService {
     @Transactional
     public void updateComment(Long commentId,String content){
         Comment comment = commentRepository.findById(commentId).orElseThrow(CResourceNotExistException::new);
+        cacheService.deleteCommentCache(comment.getBoard().getId());
         if(comment.getDeleteStatus().equals(DeleteStatus.YES)){
             throw new CResourceNotExistException();
         }

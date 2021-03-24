@@ -35,3 +35,6 @@ notEnoughStock:
 shoesAlreadyExist:
   code: "-1010"
   msg: "This shoes already exist"
+communicationError:
+  code: "-1011"
+  msg: "An error occurred during communication"
