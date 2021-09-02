@@ -12,6 +12,7 @@ import java.io.Serializable;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RegistedShoesDto implements Serializable {
 
+    private Long Id;
     private String shoesname;
     private String size;
     private String username;
@@ -19,7 +20,7 @@ public class RegistedShoesDto implements Serializable {
     private TradeStatus tradeStatus;
 
     public static RegistedShoesDto createRegistedShoesDto(RegistedShoes registedShoes){
-        return new RegistedShoesDto(registedShoes.getShoesInSize().getShoes().getName(),registedShoes.getShoesInSize().getSize().getUS(),
+        return new RegistedShoesDto(registedShoes.getId(), registedShoes.getShoesInSize().getShoes().getName(),registedShoes.getShoesInSize().getSize().getUS(),
                 registedShoes.getMember().getUsername(), registedShoes.getPrice(),registedShoes.getTradeStatus());
     }
 

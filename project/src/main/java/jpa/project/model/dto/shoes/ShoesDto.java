@@ -1,7 +1,10 @@
-package jpa.project.model.dto.Shoes;
+package jpa.project.model.dto.shoes;
 
 import jpa.project.entity.Shoes;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -34,5 +37,6 @@ public class ShoesDto {
 
 
     }
+
 
 }

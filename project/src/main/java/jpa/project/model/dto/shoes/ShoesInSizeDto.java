@@ -1,4 +1,4 @@
-package jpa.project.model.dto.Shoes;
+package jpa.project.model.dto.shoes;
 
 //import jpa.project.dto.RegistedShoes.RegistedShoesSimpleDto;
 import jpa.project.entity.ShoesInSize;

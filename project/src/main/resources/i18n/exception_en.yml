@@ -38,3 +38,7 @@ shoesAlreadyExist:
 communicationError:
   code: "-1011"
   msg: "An error occurred during communication"
+messageNotFound:
+  code: "-1012"
+  msg: "message does not exist";
+

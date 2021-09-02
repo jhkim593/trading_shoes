@@ -17,7 +17,6 @@ import javax.servlet.http.HttpServletRequest;
 @RequiredArgsConstructor
 @RestControllerAdvice
 public class ExceptionAdvice {
-
     private final ResponseService responseService;
 
     private final MessageSource messageSource;
@@ -94,6 +93,12 @@ public class ExceptionAdvice {
     protected CommonResult communicationException(HttpServletRequest request, CCommunicationException e){
         return responseService.getFailResult(Integer.valueOf(getMessage("communicationError.code")), getMessage("communicationError.msg"));
     }
+//    @ExceptionHandler(CUserNotFoundException.class)
+//    @ResponseStatus(HttpStatus.NOT_FOUND)
+//    protected CommonResult messageNotFoundException(HttpServletRequest request,CUserNotFoundException e){
+//        return responseService.getFailResult(Integer.valueOf(getMessage("userNotFound.code")),getMessage("userNotFound.msg"));
+//
+//    }
 
 
 

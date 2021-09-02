@@ -28,11 +28,14 @@ public class BrandService {
 
 
 
+
+
     @Transactional
     public BrandDto save(BrandRegisterDto brandRegisterDto){
         Brand brand = Brand.createBrand(brandRegisterDto.getName(), brandRegisterDto.getContent());
         brandRepository.save(brand);
         return BrandDto.createBrandDto(brand);
+
 
     }
     @Transactional

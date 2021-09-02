@@ -1,6 +1,6 @@
 package jpa.project.model.dto.brand;
 
-import jpa.project.model.dto.Shoes.ShoesSimpleDto;
+import jpa.project.model.dto.shoes.ShoesSimpleDto;
 import jpa.project.entity.Brand;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

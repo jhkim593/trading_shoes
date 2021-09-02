@@ -40,8 +40,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 //	implementation 'it.ozimov:embedded-redis:0.7.2'
 
-	//message properties를 yml로
-	implementation 'net.rakugakibox.util:yaml-resource-bundle:1.1'
+
 
 	//카카오 연동시 결과 json 객체매핑
 	implementation 'com.google.code.gson:gson'

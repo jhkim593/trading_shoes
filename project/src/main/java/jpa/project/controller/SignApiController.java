@@ -27,7 +27,7 @@ public class SignApiController {
     private final KakaoService  kakaoService;
     private final MemberRepository memberRepository;
 
-    @ApiOperation(value = "로그인",notes = "아이디로 회원 로그인을 한다")
+    @ApiOperation(value = "로그인",notes = "아이디,비밀번호로 회원 로그인을 한다")
     @PostMapping(value = "/signin")
     public SingleResult<MemberLoginResponseDto> signin(@ModelAttribute MemberLoginRequestDto memberLoginRequestDto)
     {
@@ -37,9 +37,7 @@ public class SignApiController {
 
     @ApiOperation(value = "가입",notes = "회원가입")
     @PostMapping(value = "/signup")
-    public CommonResult signup(
-
-              @ModelAttribute MemberRegisterRequestDto memberRegisterRequestDto
+    public CommonResult signup(@ModelAttribute MemberRegisterRequestDto memberRegisterRequestDto
     ){
         signService.signup(memberRegisterRequestDto);
         return responseService.getSuccessResult();
@@ -66,10 +64,12 @@ public class SignApiController {
 
         return responseService.getSingResult( signService.socialSignup(accessToken,provider,name));
     }
+
     @ApiOperation(value = "로그아웃", notes = "로그아웃을 한다")
     @PostMapping(value = "/logout")
     public CommonResult logout(@RequestHeader(value="X-AUTH-TOKEN") String token) {
-        signService.logoutUser(token);
+
+        signService.logoutMember(token);
         return responseService.getSuccessResult();
     }
 }

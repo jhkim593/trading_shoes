@@ -4,9 +4,12 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import jpa.project.entity.DeliveryStatus;
+import jpa.project.entity.Order;
+import jpa.project.entity.OrderStatus;
+import jpa.project.entity.QMember;
 import jpa.project.model.dto.order.OrderDto;
 import jpa.project.model.dto.order.OrderSimpleDto;
-import jpa.project.entity.*;
 import jpa.project.repository.RepositoryHelper;
 import jpa.project.repository.search.OrderSearch;
 import jpa.project.repository.search.ShoesSizeSearch;
@@ -20,13 +23,13 @@ import org.springframework.util.ObjectUtils;
 import javax.persistence.EntityManager;
 import java.util.List;
 
-import static jpa.project.entity.QDelivery.*;
-import static jpa.project.entity.QOrder.*;
-import static jpa.project.entity.QRegistedShoes.*;
-import static jpa.project.entity.QShoes.*;
-import static jpa.project.entity.QShoesInSize.*;
-import static jpa.project.entity.QShoesSize.*;
-import static org.springframework.util.StringUtils.*;
+import static jpa.project.entity.QDelivery.delivery;
+import static jpa.project.entity.QOrder.order;
+import static jpa.project.entity.QRegistedShoes.registedShoes;
+import static jpa.project.entity.QShoes.shoes;
+import static jpa.project.entity.QShoesInSize.shoesInSize;
+import static jpa.project.entity.QShoesSize.shoesSize;
+import static org.springframework.util.StringUtils.hasText;
 
 
 public class OrderRepositoryImpl implements OrderRepositoryCustom{
@@ -46,11 +49,13 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom{
     @Override
     public Slice<OrderSimpleDto> findOrdersByShoesSize(Long shoesId,Long lastOrderId,ShoesSizeSearch shoesSizeSearch,Pageable pageable) {
         List<OrderSimpleDto> orderSimpleDtos = queryFactory.select(Projections.constructor(OrderSimpleDto.class, order.createdDate, shoes.name,
-                shoesSize.US, order.price)).from(order)
+                shoesSize.US, order.price,order.orderStatus,delivery.deliveryStatus)).from(order)
                 .join(order.registedShoes, registedShoes)
                 .join(registedShoes.shoesInSize, shoesInSize)
                 .join(shoesInSize.size, shoesSize)
                 .join(shoesInSize.shoes, shoes)
+                .join(order.delivery, delivery)
+
                 .where(
                         shoesSizeSearchEq(shoesSizeSearch.getShoesSize())
                         , shoes.id.eq(shoesId)
@@ -89,17 +94,27 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom{
                 .orderBy(order.createdDate.asc())
                 .where(
                         buyerNameEq(orderSearch.getBuyerName())
-                        , sellerNameEq(orderSearch.getSellerName()),
-                        orderStatusEq(orderSearch.getOrderStatus()),
-                        deliveryStatusEq(orderSearch.getDeliveryStatus())
+                        ,sellerNameEq(orderSearch.getSellerName())
+                        ,orderStatusEq(orderSearch.getOrderStatus())
+                        ,deliveryStatusEq(orderSearch.getDeliveryStatus())
+                        ,trackingNumberEq(orderSearch.getTrackingNumber())
+
                 ).fetch();
 
-        JPAQuery<Order> count = queryFactory.selectFrom(order).where(buyerNameEq(orderSearch.getBuyerName())
+        JPAQuery<Order> count = queryFactory.selectFrom(order).
+                where(
+                buyerNameEq(orderSearch.getBuyerName())
                 , sellerNameEq(orderSearch.getSellerName()),
                 orderStatusEq(orderSearch.getOrderStatus()),
-                deliveryStatusEq(orderSearch.getDeliveryStatus()));
+                deliveryStatusEq(orderSearch.getDeliveryStatus())
+                ,trackingNumberEq(orderSearch.getTrackingNumber()));
+
         return  PageableExecutionUtils.getPage(orderDto,pageable,()->count.fetchCount());
 
+    }
+
+    private BooleanExpression trackingNumberEq(String trackingNumber) {
+      return  hasText(trackingNumber)?delivery.trackingNumber.eq(trackingNumber):null;
     }
 
     private BooleanExpression deliveryStatusEq(DeliveryStatus deliveryStatus) {

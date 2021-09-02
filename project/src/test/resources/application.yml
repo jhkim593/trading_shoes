@@ -1,11 +1,4 @@
 spring:
-  datasource:
-    url: jdbc:h2:tcp://localhost/~/jpaproject
-    username: sa
-    password:
-    driver-class-name: org.h2.Driver
-    platform: h2
-
   social:
     kakao:
       client_id: f389075420a92087544133981b80ddbb
@@ -17,15 +10,22 @@ spring:
         logout: https://kapi.kakao.com/v2/user/logout
 
 
-  #  url:
-  #    base: http://localhost:8080
+#  url:
+#    base: http://localhost:8080
 
   redis:
     host: localhost
     port: 6379
 
 
+  datasource:
+    url: jdbc:h2:mem:test
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+
   jpa:
+
     hibernate:
       ddl-auto: create
     properties:
@@ -53,6 +53,6 @@ spring:
 
 
 logging:
-  level:
-    org.hibernate.SQL: DEBUG
+    level:
+      org.hibernate.SQL: DEBUG
 #      org.hibernate.type: trace

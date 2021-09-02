@@ -29,6 +29,7 @@ public class SignService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final KakaoService kakaoService;
+//
 
 
     @Transactional
@@ -112,9 +113,9 @@ public class SignService {
         return new MemberRegisterResponseDto(member.getId(),member.getUsername(),member.getEmail());
     }
     @Transactional
-    public void logoutUser(String token) {
+    public void logoutMember(String token) {
         redisTemplate.opsForValue().set(CacheKey.TOKEN + ":" + token, "v", jwtTokenProvider.getRemainingSeconds(token));
-       Member member = memberRepository.findById(Long.valueOf(jwtTokenProvider.getMemberPk(token))).orElseThrow(CUserNotFoundException::new);
+        Member member = memberRepository.findById(Long.valueOf(jwtTokenProvider.getMemberPk(token))).orElseThrow(CUserNotFoundException::new);
         member.changeRefreshToken("invalidate");
     }
 

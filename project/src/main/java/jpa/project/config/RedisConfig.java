@@ -36,7 +36,6 @@ public class RedisConfig {
         return new LettuceConnectionFactory(host, port);
     }
 
-
     @Bean
     public RedisTemplate<String, Object> redisTemplate() {
         RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
@@ -44,6 +43,9 @@ public class RedisConfig {
         redisTemplate.setConnectionFactory(redisConnectionFactory());
         return redisTemplate;
     }
+
+
+
 
 
     @Bean
@@ -74,6 +76,8 @@ public class RedisConfig {
                 .entryTtl(Duration.ofSeconds(CacheKey.REGISTEDSHOES_EXPIRE_SEC)));
         cacheConfigurations.put(CacheKey.REGISTEDSHOES_LIST, RedisCacheConfiguration.defaultCacheConfig()
                 .entryTtl(Duration.ofSeconds(CacheKey.REGISTEDSHOES_EXPIRE_SEC)));
+//        cacheConfigurations.put(CacheKey.MESSAGE, RedisCacheConfiguration.defaultCacheConfig()
+//                .entryTtl(Duration.ofSeconds(CacheKey.MESSAGE_EXPIRE_SEC)));
 
         return RedisCacheManager.RedisCacheManagerBuilder.fromConnectionFactory(redisConnectionFactory()).cacheDefaults(configuration)
                 .withInitialCacheConfigurations(cacheConfigurations).build();

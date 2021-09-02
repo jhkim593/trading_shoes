@@ -5,13 +5,14 @@ import jpa.project.entity.Order;
 import jpa.project.entity.OrderStatus;
 import lombok.*;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class OrderSimpleDto {
+public class OrderSimpleDto implements Serializable {
     private LocalDateTime orderDateTime;
     private String shoesname;
     private String size;

@@ -6,7 +6,7 @@ import jpa.project.entity.Brand;
 import jpa.project.entity.Shoes;
 import jpa.project.entity.ShoesInSize;
 import jpa.project.entity.ShoesSize;
-import jpa.project.model.dto.Shoes.*;
+import jpa.project.model.dto.shoes.*;
 import jpa.project.repository.ShoesSize.ShoesSizeRepository;
 import jpa.project.repository.brand.BrandRepository;
 import jpa.project.repository.member.MemberRepository;

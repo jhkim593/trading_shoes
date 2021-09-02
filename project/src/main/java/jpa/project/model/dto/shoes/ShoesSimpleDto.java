@@ -1,4 +1,4 @@
-package jpa.project.model.dto.Shoes;
+package jpa.project.model.dto.shoes;
 
 import jpa.project.entity.Shoes;
 import lombok.AllArgsConstructor;

@@ -4,10 +4,7 @@ import jpa.project.advide.exception.CNotOwnerException;
 import jpa.project.advide.exception.CResourceNotExistException;
 import jpa.project.advide.exception.CUserNotFoundException;
 import jpa.project.cache.CacheKey;
-import jpa.project.entity.Member;
-import jpa.project.entity.RegistedShoes;
-import jpa.project.entity.ShoesInSize;
-import jpa.project.entity.TradeStatus;
+import jpa.project.entity.*;
 import jpa.project.model.dto.registedShoes.RegistedShoesDto;
 import jpa.project.repository.member.MemberRepository;
 import jpa.project.repository.registedShoes.RegistedShoesRepository;
@@ -36,10 +33,11 @@ public class RegistedShoesService {
         Member member = getMember(username);
         ShoesInSize shoesInSize = getShoesInSize(shoesInSizeId);
         RegistedShoes registedShoes = RegistedShoes.createRegistedShoes(member, shoesInSize, price, tradeStatus);
-        cacheService.deleteRegistedShoesCache(member.getId(),null);
+
         registedShoesRepository.save(registedShoes);
+        cacheService.deleteRegistedShoesCache(member.getId(), registedShoes.getId());
         if(registedShoes.getTradeStatus().equals(TradeStatus.SELL))
-        changeShoesPrice(registedShoes);
+        changeShoesPrice(registedShoes.getShoesInSize().getShoes());
 
         return RegistedShoesDto.createRegistedShoesDto(registedShoes);
 
@@ -66,7 +64,7 @@ public class RegistedShoesService {
         }
         cacheService.deleteRegistedShoesCache(registedShoes.getMember().getId(),registedShoesId);
         registedShoes.changePrice(price);
-        changeShoesPrice(registedShoes);
+        changeShoesPrice(registedShoes.getShoesInSize().getShoes());
 
     }
     @Cacheable(value = CacheKey.REGISTEDSHOES, key = "#registedShoesId",unless ="#result==null")
@@ -75,9 +73,10 @@ public class RegistedShoesService {
         return RegistedShoesDto.createRegistedShoesDto(registedShoes);
     }
 
-    private void changeShoesPrice(RegistedShoes registedShoes) {
-        int lowestPriceInShoes = registedShoesRepository.findLowestPriceInShoes(registedShoes.getShoesInSize().getShoes().getId());
-        registedShoes.getShoesInSize().getShoes().changePrice(lowestPriceInShoes);
+    private void changeShoesPrice(Shoes shoes) {
+        Optional<RegistedShoes> optionalRegistedShoes = registedShoesRepository.findLowestPriceInShoes(shoes.getId());
+        if(!optionalRegistedShoes.isEmpty())
+       shoes.changePrice(optionalRegistedShoes.orElseThrow(CResourceNotExistException::new).getPrice());
     }
 
     private RegistedShoes getRegistedShoes(Long registedShoesId) {
@@ -92,8 +91,9 @@ public class RegistedShoesService {
             throw new CNotOwnerException();
         }
         cacheService.deleteRegistedShoesCache(registedShoes.getMember().getId(),registedShoesId);
+        Shoes shoes = registedShoes.getShoesInSize().getShoes();
         registedShoesRepository.delete(registedShoes);
-        changeShoesPrice(registedShoes);
+        changeShoesPrice(shoes);
 
     }
 

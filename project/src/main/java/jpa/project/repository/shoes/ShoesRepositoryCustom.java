@@ -1,7 +1,7 @@
 package jpa.project.repository.shoes;
 
-import jpa.project.model.dto.Shoes.ShoesDto;
-import jpa.project.model.dto.Shoes.ShoesSimpleDto;
+import jpa.project.model.dto.shoes.ShoesDto;
+import jpa.project.model.dto.shoes.ShoesSimpleDto;
 import jpa.project.repository.search.ShoesSearch;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

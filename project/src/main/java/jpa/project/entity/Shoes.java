@@ -90,11 +90,11 @@ public static Shoes createShoes(String name,Brand brand,ShoesInSize...shoesInSiz
     }
 
     public void changePrice(int price) {
-    if(this.getPrice()==0||this.getPrice()>price){
+
         this.price=price;
     }
 
-    }
+
 
 }
 
