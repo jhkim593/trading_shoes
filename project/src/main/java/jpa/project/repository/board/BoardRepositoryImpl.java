@@ -25,9 +25,11 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
     @Autowired
     private EntityManager em;
 
+
     public BoardRepositoryImpl(EntityManager em) {
         this.queryFactory = new JPAQueryFactory(em);
     }
+
 
     @Override
     public Page<BoardDto> search(BoardSearch boardSearch, Pageable pageable) {

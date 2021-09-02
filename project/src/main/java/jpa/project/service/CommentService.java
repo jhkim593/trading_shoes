@@ -30,7 +30,7 @@ public class CommentService {
     private final CacheService cacheService;
 
     @Transactional
-    @CacheEvict(value = CacheKey.COMMENTS, key = "#requestDto.ticketId")
+    @CacheEvict(value = CacheKey.COMMENTS, key = "#requestDto.boardId")
     public CommentDto saveComment(CommentCreateRequestDto requestDto){
         Member member = getMember(requestDto);
         Board board = getBoard(requestDto.getBoardId());
@@ -74,7 +74,7 @@ public class CommentService {
 
     @Transactional
     public void deleteComment(Long commentId){
-        Comment comment = commentRepository.findById(commentId).orElseThrow(CResourceNotExistException::new);
+        Comment comment = commentRepository.findCommentWithParent(commentId).orElseThrow(CResourceNotExistException::new);
         cacheService.deleteCommentCache(comment.getBoard().getId());
         if(comment.getChild().size()==0){
             commentRepository.delete(deleteAble(comment));}

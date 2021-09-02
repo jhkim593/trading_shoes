@@ -1,16 +1,16 @@
 package jpa.project.controller;
 
 import io.swagger.annotations.*;
-import jpa.project.model.dto.delivery.DeliveryRegisterRequestDto;
 import jpa.project.entity.DeliveryStatus;
-import jpa.project.repository.search.OrderSearch;
-import jpa.project.response.CommonResult;
-import jpa.project.service.OrderService;
-import jpa.project.service.ResponseService;
+import jpa.project.model.dto.delivery.DeliveryRegisterRequestDto;
 import jpa.project.model.dto.order.OrderDto;
 import jpa.project.model.dto.order.OrderSimpleDto;
+import jpa.project.repository.search.OrderSearch;
 import jpa.project.repository.search.ShoesSizeSearch;
+import jpa.project.response.CommonResult;
 import jpa.project.response.SingleResult;
+import jpa.project.service.OrderService;
+import jpa.project.service.ResponseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,6 +18,7 @@ import org.springframework.data.domain.Slice;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+
 
 @Api(tags = {"7.Order"})
 @RestController
@@ -97,6 +98,14 @@ public class OrderApiController {
     @GetMapping("/admin/orders")
     public SingleResult<Page<OrderDto>> findOrdersByDeliveryStatus(@ModelAttribute OrderSearch orderSearch, Pageable pageable){
        return responseService.getSingResult(orderService.findAllOrder(orderSearch,pageable));
+
+    }
+
+    @ApiOperation(value = "관리자 모든 주문내역" ,notes = "관리자가 상태에 따른 주문내역을 조회한다.")
+    @DeleteMapping("/order/{id}")
+    public CommonResult deleteOrder(@PathVariable("id")Long id){
+        orderService.deleteOrder(id);
+        return responseService.getSuccessResult();
 
     }
 

@@ -4,7 +4,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import jpa.project.model.dto.Shoes.*;
+import jpa.project.model.dto.shoes.*;
 import jpa.project.repository.search.ShoesSearch;
 import jpa.project.response.CommonResult;
 import jpa.project.response.SingleResult;

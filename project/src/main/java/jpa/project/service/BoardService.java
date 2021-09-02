@@ -76,6 +76,7 @@ public class BoardService {
         }
 
         boardRepository.deleteById(boardId);
+
     }
 
 

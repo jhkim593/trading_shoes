@@ -19,7 +19,6 @@ public class RegistedShoes extends BaseTimeEntity {
     private Long id;
 
 
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
@@ -53,10 +52,7 @@ public class RegistedShoes extends BaseTimeEntity {
 
         return registedShoes;
     }
-    public void deleteRegistedShoes(){
-        this.shoesStatus=ShoesStatus.COMP;
-        this.shoesInSize.deleteStockQuantity();
-    }
+
 
     public void addShoesInSize(ShoesInSize shoesInSize) {
         this.shoesInSize = shoesInSize;
@@ -70,7 +66,7 @@ public class RegistedShoes extends BaseTimeEntity {
         member.getRegistedShoes().add(this);
     }
 
-    public void order() {
+    public void deleteRegistedShoes() {
         if (this.getShoesStatus().equals(ShoesStatus.COMP)) {
             throw new CNotEnoughStockException();
         }
@@ -79,6 +75,10 @@ public class RegistedShoes extends BaseTimeEntity {
     }
     public void changePrice(int price){
         this.price=price;
+    }
+
+    public void updateShoesStatus(ShoesStatus shoesStatus){
+        this.shoesStatus=shoesStatus;
     }
 
 

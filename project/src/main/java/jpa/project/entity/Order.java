@@ -1,6 +1,7 @@
 package jpa.project.entity;
 
-import lombok.AccessLevel;
+import
+        lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -53,7 +54,7 @@ public class Order extends BaseTimeEntity{
         Delivery delivery = Delivery.createDelivery(buyer.getAddress(), DeliveryStatus.Ordered);
         order.addDelivery(delivery);
         order.orderStatus=OrderStatus.Progress;
-        registedShoes.order();
+        registedShoes.deleteRegistedShoes();
         return order;
     }
 
@@ -78,6 +79,13 @@ public class Order extends BaseTimeEntity{
         this.delivery.updateDelivery(deliveryStatus);
     }
     public void updateOrderStatus(OrderStatus orderStatus){this.orderStatus=orderStatus;}
+
+    public void deleteOrder(){
+        this.orderStatus=OrderStatus.Cancel;
+        this.registedShoes.updateShoesStatus(ShoesStatus.BID);
+        if(this.registedShoes.getTradeStatus().equals(TradeStatus.SELL)){
+        this.registedShoes.getShoesInSize().addStock();}
+    }
 
 
     /**

@@ -36,7 +36,7 @@ public class BrandApiController {
     }
 
     @ApiOperation(value="브랜드 단건조회",notes="브랜드를 단건 조회한다")
-    @GetMapping("/brand")
+    @GetMapping("/brand/{id}")
     public SingleResult<BrandDto>findById(@PathVariable("id")Long id){
         return responseService.getSingResult(brandService.findById(id));
     }
@@ -57,7 +57,7 @@ public class BrandApiController {
             @ApiImplicitParam(name = "X-AUTH-TOKEN",value = "로그인 성공후 access-token",required = true,dataType = "String",paramType = "header")
     })
     @ApiOperation(value="브랜드 수정",notes="브랜드를 수정한다")
-    @PutMapping("/admin/brand")
+    @PutMapping("/admin/brand/{id}")
     public CommonResult update(@PathVariable("id")Long id, @ModelAttribute BrandUpdateDto brandUpdateDto) {
         brandService.updateBrand(id, brandUpdateDto);
         return responseService.getSuccessResult();

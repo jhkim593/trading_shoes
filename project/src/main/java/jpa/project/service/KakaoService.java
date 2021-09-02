@@ -38,8 +38,10 @@ public class KakaoService {
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         headers.set("Authorization", "Bearer " + accessToken);
 
+
+
         // Set http entity
-        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(null, headers);
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(headers);
         try {
             // Request profile
             ResponseEntity<String> response = restTemplate.postForEntity(env.getProperty("spring.social.kakao.url.profile"), request, String.class);

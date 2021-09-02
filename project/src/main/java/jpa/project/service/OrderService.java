@@ -4,10 +4,7 @@ import jpa.project.advide.exception.COrderNotFoundException;
 import jpa.project.advide.exception.CResourceNotExistException;
 import jpa.project.advide.exception.CUserNotFoundException;
 import jpa.project.cache.CacheKey;
-import jpa.project.entity.DeliveryStatus;
-import jpa.project.entity.Member;
-import jpa.project.entity.Order;
-import jpa.project.entity.RegistedShoes;
+import jpa.project.entity.*;
 import jpa.project.model.dto.delivery.DeliveryRegisterRequestDto;
 import jpa.project.model.dto.order.OrderDto;
 import jpa.project.model.dto.order.OrderSimpleDto;
@@ -42,17 +39,17 @@ public class OrderService {
         Member member = getMember(username);
         RegistedShoes registedShoes = getRegistedShoes(registedShoesId);
         Order order = Order.createOrder(member, registedShoes);
-        cacheService.deleteOrderCache(order.getBuyer().getId(),order.getSeller().getId(),order.getRegistedShoes().getShoesInSize().getShoes().getId(),order.getId());
-        registedShoes.deleteRegistedShoes();
         changeShoesPrice(registedShoes);
         orderRepository.save(order);
+        cacheService.deleteOrderCache(order.getBuyer().getId(),order.getSeller().getId(),order.getRegistedShoes().getShoesInSize().getShoes().getId(),order.getId());
         return OrderDto.createOrderDto(order);
 
     }
 
     private void changeShoesPrice(RegistedShoes registedShoes) {
-        int lowestPriceInShoes = registedShoesRepository.findLowestPriceInShoes(registedShoes.getShoesInSize().getShoes().getId());
-        registedShoes.getShoesInSize().getShoes().changePrice(lowestPriceInShoes);
+        Optional<RegistedShoes>optionalRegistedShoes=registedShoesRepository.findLowestPriceInShoes(registedShoes.getShoesInSize().getShoes().getId());
+        if(!optionalRegistedShoes.isEmpty())
+        registedShoes.getShoesInSize().getShoes().changePrice(optionalRegistedShoes.orElseThrow(CResourceNotExistException::new).getPrice());
     }
 
     private RegistedShoes getRegistedShoes(Long registedShoesId) {
@@ -126,5 +123,14 @@ public class OrderService {
     @Cacheable(value = CacheKey.ORDERS, key = "#shoesId",unless ="#result==null")
     public Slice<OrderSimpleDto>findOrdersByShoesSize(Long shoesId,Long lastOrderId,ShoesSizeSearch shoesSizeSearch,int limit){
         return orderRepository.findOrdersByShoesSize(shoesId, lastOrderId != null ? lastOrderId : Long.MAX_VALUE, shoesSizeSearch, PageRequest.of(0, limit));
+    }
+
+    //주문취소
+    @Transactional
+    public void deleteOrder(Long id) {
+        Order order = getOrder(id);
+        order.deleteOrder();
+        cacheService.deleteOrderCache(order.getBuyer().getId(),order.getSeller().getId(),order.getRegistedShoes().getShoesInSize().getShoes().getId(),order.getId());
+        changeShoesPrice(order.getRegistedShoes());
     }
 }

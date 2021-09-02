@@ -10,6 +10,7 @@ import lombok.Setter;
 public class OrderSearch {
     private String buyerName;
     private String sellerName;
+    private String trackingNumber;
     private DeliveryStatus deliveryStatus;
     private OrderStatus orderStatus;
 

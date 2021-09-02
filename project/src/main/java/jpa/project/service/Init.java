@@ -57,12 +57,13 @@ public class Init {
 //
 
 
-            Shoes shoes = Shoes.createShoes("1", asics, ShoesInSize.createShoesInSize(shoesSize), ShoesInSize.createShoesInSize(shoesSize1), ShoesInSize.createShoesInSize(shoesSize2),
-                    ShoesInSize.createShoesInSize(shoesSize3), ShoesInSize.createShoesInSize(shoesSize4), ShoesInSize.createShoesInSize(shoesSize5), ShoesInSize.createShoesInSize(shoesSize6), ShoesInSize.createShoesInSize(shoesSize7), ShoesInSize.createShoesInSize(shoesSize8),
-                    ShoesInSize.createShoesInSize(shoesSize9), ShoesInSize.createShoesInSize(shoesSize10));
-            em.persist(shoes);
+            for(int i=0;i<50;i++) {
+                Shoes shoes = Shoes.createShoes(String.valueOf(i), asics, ShoesInSize.createShoesInSize(shoesSize), ShoesInSize.createShoesInSize(shoesSize1), ShoesInSize.createShoesInSize(shoesSize2),
+                        ShoesInSize.createShoesInSize(shoesSize3), ShoesInSize.createShoesInSize(shoesSize4), ShoesInSize.createShoesInSize(shoesSize5), ShoesInSize.createShoesInSize(shoesSize6), ShoesInSize.createShoesInSize(shoesSize7), ShoesInSize.createShoesInSize(shoesSize8),
+                        ShoesInSize.createShoesInSize(shoesSize9), ShoesInSize.createShoesInSize(shoesSize10));
+                em.persist(shoes);
 
-
+            }
         }
 
     }

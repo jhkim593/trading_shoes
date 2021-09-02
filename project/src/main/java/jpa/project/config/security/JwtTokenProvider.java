@@ -53,6 +53,7 @@ public class JwtTokenProvider { // JWT 토큰을 생성 및 검증 모듈
                 .signWith(SignatureAlgorithm.HS256, secretKey) // 암호화 알고리즘, secret값 세팅
                 .compact();
     }
+
     // jwt refresh 토큰 생성
     public String createRefreshToken() {
         Date now = new Date();
@@ -71,7 +72,11 @@ public class JwtTokenProvider { // JWT 토큰을 생성 및 검증 모듈
 
     // Jwt 토큰에서 회원 구별 정보 추출
     public String getMemberPk(String token) {
-        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
+        try {
+            return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
+        } catch(ExpiredJwtException e) {
+            return e.getClaims().getSubject();
+        }
     }
 
     public Duration getRemainingSeconds(String jwtToken) {
@@ -79,15 +84,14 @@ public class JwtTokenProvider { // JWT 토큰을 생성 및 검증 모듈
         long seconds = (claims.getBody().getExpiration().getTime() - claims.getBody().getIssuedAt().getTime()) / 1000;
         return Duration.ofSeconds(seconds < 0 ? 0 : seconds);
     }
-
     // Request의 Header에서 token 파싱 : "X-AUTH-TOKEN: jwt토큰"
     public String resolveToken(HttpServletRequest req) {
         return req.getHeader("X-AUTH-TOKEN");
     }
-
     // Jwt 토큰의 유효성 + 만료일자 확인
     public boolean validateToken(String jwtToken) {
         try {
+            if(isLoggedOut(jwtToken)) return false;
             Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwtToken);
             return !claims.getBody().getExpiration().before(new Date());
         } catch (Exception e) {

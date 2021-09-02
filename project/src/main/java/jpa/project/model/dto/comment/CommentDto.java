@@ -4,6 +4,7 @@ import jpa.project.entity.Comment;
 import jpa.project.entity.DeleteStatus;
 import lombok.*;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,7 +12,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class CommentDto {
+public class CommentDto implements Serializable {
     private Long id;
     private String content;
     private Long memberId;

@@ -12,6 +12,7 @@ import org.springframework.data.domain.Slice;
 import javax.persistence.EntityManager;
 
 import java.util.List;
+import java.util.Optional;
 
 import static jpa.project.entity.QMember.*;
 import static jpa.project.entity.QRegistedShoes.*;
@@ -30,15 +31,15 @@ public class RegistedShoesRepositoryImpl implements RegistedShoesRepositoryCusto
         this.queryFactory = new JPAQueryFactory(em);
     }
     @Override
-    public int findLowestPriceInShoes(Long id) {
-        RegistedShoes registedShoes = em.createQuery("select r from RegistedShoes r join fetch r.shoesInSize sis " +
-                "join fetch sis.shoes sh where sh.id=:id and r.shoesStatus=jpa.project.entity.ShoesStatus.BID and r.tradeStatus=jpa.project.entity.TradeStatus.SELL order by r.price asc", RegistedShoes.class).setParameter("id", id).setMaxResults(1).getSingleResult();
-        return registedShoes.getPrice();
+    public Optional<RegistedShoes> findLowestPriceInShoes(Long id) {
+       return em.createQuery("select r from RegistedShoes r join fetch r.shoesInSize sis " +
+                "join fetch sis.shoes sh where sh.id=:id and r.shoesStatus=jpa.project.entity.ShoesStatus.BID and r.tradeStatus=jpa.project.entity.TradeStatus.SELL order by r.price asc", RegistedShoes.class).setParameter("id", id).getResultList().stream().findFirst();
+
     }
 
     @Override
     public Slice<RegistedShoesDto> findRegistedShoesByTradeStatus(Long memberId,Long lastRegistedShoesId,TradeStatus tradeStatus,Pageable pageable) {
-        List<RegistedShoesDto> registedShoesDtos = queryFactory.select(Projections.constructor(RegistedShoesDto.class,
+        List<RegistedShoesDto> registedShoesDtos = queryFactory.select(Projections.constructor(RegistedShoesDto.class,registedShoes.id,
                 shoes.name, shoesSize.US,
                 member.username, registedShoes.price
                 , registedShoes.tradeStatus)).from(registedShoes)

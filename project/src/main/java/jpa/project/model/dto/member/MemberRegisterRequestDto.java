@@ -1,10 +1,11 @@
 package jpa.project.model.dto.member;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MemberRegisterRequestDto {
 
 

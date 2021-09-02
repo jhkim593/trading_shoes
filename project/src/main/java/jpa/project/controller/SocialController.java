@@ -23,8 +23,8 @@ public class SocialController {
         private final Gson gson;
         private final KakaoService kakaoService;
 
-        @Value("${spring.url.base}")
-        private String baseUrl;
+//        @Value("${spring.url.base}")
+//        private String baseUrl;
 
         @Value("${spring.social.kakao.client_id}")
         private String kakaoClientId;
@@ -68,5 +68,6 @@ public class SocialController {
             mav.setViewName("social/redirectKakao");
             return mav;
         }
+
     }
 
